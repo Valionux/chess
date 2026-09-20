@@ -61,6 +61,17 @@ public class ChessPiece {
     }
 
     /**
+     * Adds a move to a list of moves
+     *
+     */
+
+    private void AddMove(ArrayList<ChessMove> moves, ChessBoard board, ChessPosition startPosition, ChessPosition endPosition, PieceType promotionType){
+        if (endPosition.isValid() && board.getPiece(endPosition) == null) {
+            moves.add(new ChessMove(startPosition, endPosition, promotionType));
+        }
+    }
+
+    /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
@@ -73,11 +84,52 @@ public class ChessPiece {
         int col = myPosition.getColumn();
         switch (this.getPieceType()){
             case KING:
-                for (int i = -1; i < 2; ++i){
-                    for (int j = -1; j < 2; ++j){
+                for (int i = -1; i < 2; ++i) {
+                    for (int j = -1; j < 2; ++j) {
                         var position = new ChessPosition(row + i, col + j);
-
+                        AddMove(moves, board, myPosition, position, PieceType.PAWN);
                     }
+                }
+            case QUEEN:
+                var bishop = new ChessPiece(pieceColor, PieceType.BISHOP);
+                var rook = new ChessPiece(pieceColor, PieceType.ROOK);
+                moves.addAll(bishop.pieceMoves(board, myPosition));
+                moves.addAll(rook.pieceMoves(board, myPosition));
+            case ROOK:
+                for (int i = 0; i < 8; ++i){
+                    var throughRows = new ChessPosition(i, col);
+                    var throughColumns = new ChessPosition(row, i);
+                    AddMove(moves, board, myPosition, throughColumns, PieceType.PAWN);
+                    AddMove(moves, board, myPosition, throughRows, PieceType.PAWN);
+                }
+            case BISHOP:
+                for (int i = -7; i < 8; ++i){
+                    var leftToRight = new ChessPosition(row + i, col + i);
+                    var rightToLeft = new ChessPosition(row - i, col + i);
+                    AddMove(moves, board, myPosition, leftToRight, PieceType.PAWN);
+                    AddMove(moves, board, myPosition, rightToLeft, PieceType.PAWN);
+                }
+            case KNIGHT:
+                for (int i = - 2; i < 3; i += 4){
+                    for (int j = -1; j < 2; j += 2){
+                        var standingL = new ChessPosition(row + i, col + j);
+                        var lyingL = new ChessPosition(row + j, col + i);
+                        AddMove(moves, board, myPosition, standingL, PieceType.PAWN);
+                        AddMove(moves, board, myPosition, lyingL, PieceType.PAWN);
+                    }
+                }
+            case PAWN:
+                switch (row){
+                    case 1:
+                        AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), PieceType.PAWN);
+                        AddMove(moves, board, myPosition, new ChessPosition(row + 2, col), PieceType.PAWN);
+                    case 6:
+                        AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), PieceType.QUEEN);
+                        AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), PieceType.ROOK);
+                        AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), PieceType.BISHOP);
+                        AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), PieceType.KNIGHT);
+                    default:
+                        AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), PieceType.PAWN);
                 }
         }
         return moves;
