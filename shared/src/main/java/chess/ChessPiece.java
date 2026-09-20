@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -45,6 +46,20 @@ public class ChessPiece {
         return type;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -54,14 +69,16 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<>();
-        for (int i = 0; i < 8; ++i){
-            for (int j = 0; j < 8; ++j){
-                var endPosition = new ChessPosition(i, j);
-                var move = new ChessMove(myPosition, endPosition, PieceType.PAWN);
-                if (move.isLegal(this, board)){
-                    moves.add(move);
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        switch (this.getPieceType()){
+            case KING:
+                for (int i = -1; i < 2; ++i){
+                    for (int j = -1; j < 2; ++j){
+                        var position = new ChessPosition(row + i, col + j);
+
+                    }
                 }
-            }
         }
         return moves;
     }
