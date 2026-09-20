@@ -21,8 +21,6 @@ public class ChessMove {
         this.promotionPiece = promotionPiece;
     }
 
-    // PAWN will be by default the promotion piece unless it is an actual promotion move
-
     /**
      * @return ChessPosition of starting location
      */
