@@ -189,65 +189,74 @@ public class ChessPiece {
                 break;
             case PAWN:
                 int increment;
-                int secondRow;
-                int lastRow;
-                if (this.getTeamColor() == ChessGame.TeamColor.WHITE){
+                int startingRow;
+                int promotionRow;
+
+                if (pieceColor == ChessGame.TeamColor.WHITE) {
                     increment = 1;
-                    secondRow = 2;
-                    lastRow = 8;
+                    startingRow = 2;
+                    promotionRow = 7;
                 } else {
                     increment = -1;
-                    secondRow = 7;
-                    lastRow = 1;
+                    startingRow = 7;
+                    promotionRow = 2;
                 }
-                switch (row){
-                    case secondRow:
-                        if (board.getPiece(new ChessPosition(3, col)) == null){
-                            AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), null);
-                            if (board.getPiece(new ChessPosition(4, col)) == null){
-                                AddMove(moves, board, myPosition, new ChessPosition(row + 2, col), null);
+
+                if (row == promotionRow) {
+                    for (PieceType promotionType : PieceType.values()) {
+                        if (promotionType == PieceType.KING || promotionType == PieceType.PAWN) {
+                            continue;
+                        }
+
+                        ChessPosition forward = new ChessPosition(row + increment, col);
+                        if (forward.isValid() && board.getPiece(forward) == null) {
+                            AddMove(moves, board, myPosition, forward, promotionType);
+                        }
+
+                        ChessPosition captureRight = new ChessPosition(row + increment, col + 1);
+                        if (captureRight.isValid()
+                                && board.getPiece(captureRight) != null
+                                && board.getPiece(captureRight).getTeamColor() != this.getTeamColor()) {
+                            AddMove(moves, board, myPosition, captureRight, promotionType);
+                        }
+
+                        ChessPosition captureLeft = new ChessPosition(row + increment, col - 1);
+                        if (captureLeft.isValid()
+                                && board.getPiece(captureLeft) != null
+                                && board.getPiece(captureLeft).getTeamColor() != this.getTeamColor()) {
+                            AddMove(moves, board, myPosition, captureLeft, promotionType);
+                        }
+                    }
+                } else {
+                    ChessPosition forward = new ChessPosition(row + increment, col);
+
+                    if (forward.isValid() && board.getPiece(forward) == null) {
+                        AddMove(moves, board, myPosition, forward, null);
+
+                        if (row == startingRow) {
+                            ChessPosition doubleForward = new ChessPosition(row + 2 * increment, col);
+
+                            if (doubleForward.isValid() && board.getPiece(doubleForward) == null) {
+                                AddMove(moves, board, myPosition, doubleForward, null);
                             }
                         }
-                        position = new ChessPosition(3, col + 1);
-                        if (position.isValid() && board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                            AddMove(moves, board, myPosition, new ChessPosition(row + 1, col + 1), null);
-                        }
-                        position = new ChessPosition(3, col - 1);
-                        if (position.isValid() && board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                            AddMove(moves, board, myPosition, new ChessPosition(row + 1, col - 1), null);
-                        }
-                        break;
-                    case 7:
-                        for (PieceType promotionType: PieceType.values()){
-                            if (promotionType == PieceType.KING || promotionType == PieceType.PAWN){
-                                continue;
-                            }
-                            if (board.getPiece(new ChessPosition(row + 1, col)) == null){
-                                AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), promotionType);
-                            }
-                            position = new ChessPosition(row + 1, col + 1);
-                            if (position.isValid() && board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                                AddMove(moves, board, myPosition, new ChessPosition(row + 1, col + 1), promotionType);
-                            }
-                            position = new ChessPosition(row + 1, col - 1);
-                            if (position.isValid() && board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                                AddMove(moves, board, myPosition, new ChessPosition(row + 1, col - 1), promotionType);
-                            }
-                        }
-                        break;
-                    default:
-                        if (board.getPiece(new ChessPosition(row + 1, col)) == null){
-                            AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), null);
-                        }
-                        position = new ChessPosition(row + 1, col + 1);
-                        if (position.isValid() && board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                            AddMove(moves, board, myPosition, new ChessPosition(row + 1, col + 1), null);
-                        }
-                        position = new ChessPosition(row + 1, col - 1);
-                        if (position.isValid() && board.getPiece(position) != null && board.getPiece(position).getTeamColor() != this.getTeamColor()){
-                            AddMove(moves, board, myPosition, new ChessPosition(row + 1, col - 1), null);
-                        }
+                    }
+
+                    ChessPosition captureRight = new ChessPosition(row + increment, col + 1);
+                    if (captureRight.isValid()
+                            && board.getPiece(captureRight) != null
+                            && board.getPiece(captureRight).getTeamColor() != this.getTeamColor()) {
+                        AddMove(moves, board, myPosition, captureRight, null);
+                    }
+
+                    ChessPosition captureLeft = new ChessPosition(row + increment, col - 1);
+                    if (captureLeft.isValid()
+                            && board.getPiece(captureLeft) != null
+                            && board.getPiece(captureLeft).getTeamColor() != this.getTeamColor()) {
+                        AddMove(moves, board, myPosition, captureLeft, null);
+                    }
                 }
+                break;
         }
         return moves;
     }
