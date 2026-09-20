@@ -96,7 +96,7 @@ public class ChessPiece {
                 moves.addAll(bishop.pieceMoves(board, myPosition));
                 moves.addAll(rook.pieceMoves(board, myPosition));
             case ROOK:
-                for (int i = 0; i < 8; ++i){
+                for (int i = 1; i < 9; ++i){
                     var throughRows = new ChessPosition(i, col);
                     var throughColumns = new ChessPosition(row, i);
                     AddMove(moves, board, myPosition, throughColumns, PieceType.PAWN);
@@ -120,10 +120,10 @@ public class ChessPiece {
                 }
             case PAWN:
                 switch (row){
-                    case 1:
+                    case 2:
                         AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), PieceType.PAWN);
                         AddMove(moves, board, myPosition, new ChessPosition(row + 2, col), PieceType.PAWN);
-                    case 6:
+                    case 7:
                         AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), PieceType.QUEEN);
                         AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), PieceType.ROOK);
                         AddMove(moves, board, myPosition, new ChessPosition(row + 1, col), PieceType.BISHOP);
