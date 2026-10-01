@@ -61,17 +61,6 @@ public class ChessPiece {
     }
 
     /**
-     * Adds a move to a list of moves
-     *
-     */
-
-    private void AddMove(ArrayList<ChessMove> moves, ChessBoard board, ChessPosition startPosition, ChessPosition endPosition, PieceType promotionType){
-        if (endPosition.isValid() && (board.getPiece(endPosition) == null || board.getPiece(endPosition).getTeamColor() != this.getTeamColor())) {
-            moves.add(new ChessMove(startPosition, endPosition, promotionType));
-        }
-    }
-
-    /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
@@ -101,14 +90,13 @@ public class ChessPiece {
             case ROOK:
                 int rookRow = row;
                 int rookCol = col;
-                position = new ChessPosition(rookRow, rookCol);
                 boolean rookStop = false;
                 while (!rookStop){
                     rookRow += 1;
                     position = new ChessPosition(rookRow, rookCol);
                     AddMove(moves, board, myPosition, position, null);
                     rookStop = !position.isValid() || board.getPiece(position) != null;
-                };
+                }
                 rookRow = row;
                 rookStop = false;
                 while (!rookStop){
@@ -116,7 +104,7 @@ public class ChessPiece {
                     position = new ChessPosition(rookRow, rookCol);
                     AddMove(moves, board, myPosition, position, null);
                     rookStop = !position.isValid() || board.getPiece(position) != null;
-                };
+                }
                 rookRow = row;
                 rookStop = false;
                 while (!rookStop){
@@ -124,7 +112,7 @@ public class ChessPiece {
                     position = new ChessPosition(rookRow, rookCol);
                     AddMove(moves, board, myPosition, position, null);
                     rookStop = !position.isValid() || board.getPiece(position) != null;
-                };
+                }
                 rookCol = col;
                 rookStop = false;
                 while (!rookStop){
@@ -132,12 +120,11 @@ public class ChessPiece {
                     position = new ChessPosition(rookRow, rookCol);
                     AddMove(moves, board, myPosition, position, null);
                     rookStop = !position.isValid() || board.getPiece(position) != null;
-                };
+                }
                 break;
             case BISHOP:
                 int bishopRow = row;
                 int bishopCol = col;
-                position = new ChessPosition(bishopRow, bishopCol);
                 boolean bishopStop = false;
                 while (!bishopStop){
                     bishopRow += 1;
@@ -145,7 +132,7 @@ public class ChessPiece {
                     position = new ChessPosition(bishopRow, bishopCol);
                     AddMove(moves, board, myPosition, position, null);
                     bishopStop = !position.isValid() || board.getPiece(position) != null;
-                };
+                }
                 bishopRow = row;
                 bishopCol = col;
                 bishopStop = false;
@@ -155,7 +142,7 @@ public class ChessPiece {
                     position = new ChessPosition(bishopRow, bishopCol);
                     AddMove(moves, board, myPosition, position, null);
                     bishopStop = !position.isValid() || board.getPiece(position) != null;
-                };
+                }
                 bishopRow = row;
                 bishopCol = col;
                 bishopStop = false;
@@ -165,7 +152,7 @@ public class ChessPiece {
                     position = new ChessPosition(bishopRow, bishopCol);
                     AddMove(moves, board, myPosition, position, null);
                     bishopStop = !position.isValid() || board.getPiece(position) != null;
-                };
+                }
                 bishopRow = row;
                 bishopCol = col;
                 bishopStop = false;
@@ -175,7 +162,7 @@ public class ChessPiece {
                     position = new ChessPosition(bishopRow, bishopCol);
                     AddMove(moves, board, myPosition, position, null);
                     bishopStop = !position.isValid() || board.getPiece(position) != null;
-                };
+                }
                 break;
             case KNIGHT:
                 for (int i = - 2; i < 3; i += 4){
@@ -259,5 +246,16 @@ public class ChessPiece {
                 break;
         }
         return moves;
+    }
+
+    /**
+     * Adds a move to a list of moves
+     *
+     */
+
+    private void AddMove(ArrayList<ChessMove> moves, ChessBoard board, ChessPosition startPosition, ChessPosition endPosition, PieceType promotionType){
+        if (endPosition.isValid() && (board.getPiece(endPosition) == null || board.getPiece(endPosition).getTeamColor() != this.getTeamColor())) {
+            moves.add(new ChessMove(startPosition, endPosition, promotionType));
+        }
     }
 }
