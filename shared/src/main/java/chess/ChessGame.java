@@ -72,14 +72,14 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        var myPosition = gameBoard.findKing(teamColor);
-        for(int x = 1; x < 9; ++x){
-            for(int y = 1; y < 9; ++y){
-                var position = new ChessPosition(x, y);
+        var kingPosition = gameBoard.findKing(teamColor);
+        for(int row = 1; row < 9; ++row){
+            for(int col = 1; col < 9; ++col){
+                var position = new ChessPosition(row, col);
                 ChessPiece piece = gameBoard.getPiece(position);
-                if(piece != null && piece.getTeamColor() != gameBoard.getPiece(myPosition).getTeamColor()){
+                if(piece != null && piece.getTeamColor() != teamColor){
                     for(ChessMove move: piece.pieceMoves(gameBoard, position)){
-                        if(move.getEndPosition() == myPosition){
+                        if(move.getEndPosition().equals(kingPosition)){
                             return true;
                         }
                     }
