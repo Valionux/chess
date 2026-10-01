@@ -28,7 +28,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        teamTurn = team;
     }
 
     /**
@@ -108,4 +108,6 @@ public class ChessGame {
     public ChessBoard getBoard() {
         throw new RuntimeException("Not implemented");
     }
+
+
 }
