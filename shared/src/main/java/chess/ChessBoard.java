@@ -79,6 +79,30 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 5), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING));
     }
 
+    /**
+     * Finds the King of a certain color.
+     *
+     * @param team The team the King we look for belongs to
+     * @return The King's position or null if there is no King in this team
+     */
+
+    public ChessPosition findKing(ChessGame.TeamColor team){
+        var king = new ChessPiece(team, ChessPiece.PieceType.KING);
+        for(int x = 1; x < 9; ++x){
+            for(int y = 1; y < 9; ++y){
+                var position = new ChessPosition(x, y);
+                var piece = getPiece(position);
+                if (piece == null){
+                    continue;
+                }
+                if(piece.equals(king)){
+                    return position;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
