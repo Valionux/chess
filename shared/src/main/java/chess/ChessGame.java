@@ -49,6 +49,9 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        if(gameBoard.getPiece(startPosition) == null){
+            return null;
+        }
         throw new RuntimeException("Not implemented");
     }
 
@@ -69,7 +72,21 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        var myPosition = gameBoard.findKing(teamColor);
+        for(int x = 1; x < 9; ++x){
+            for(int y = 1; y < 9; ++y){
+                var position = new ChessPosition(x, y);
+                ChessPiece piece = gameBoard.getPiece(position);
+                if(piece != null && piece.getTeamColor() != gameBoard.getPiece(myPosition).getTeamColor()){
+                    for(ChessMove move: piece.pieceMoves(gameBoard, position)){
+                        if(move.getEndPosition() == myPosition){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
