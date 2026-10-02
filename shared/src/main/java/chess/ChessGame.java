@@ -15,6 +15,9 @@ public class ChessGame {
     ChessBoard gameBoard = new ChessBoard();
 
     public ChessGame() {
+
+        gameBoard.resetBoard();
+
     }
 
     public ChessGame(ChessGame other){
