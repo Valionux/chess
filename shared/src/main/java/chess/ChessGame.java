@@ -190,4 +190,27 @@ public class ChessGame {
         }
         gameBoard.addPiece(move.getStartPosition(), null);
     }
+
+    /**
+     * Checks whether a team has no legal move.
+     *
+     * @param teamColor team which legal moves have to be checked
+     * @return a boolean, true if there are no legal moves, false if not
+     */
+
+    private boolean noValidMoves(TeamColor teamColor){
+        for (int row = 1; row < 9; ++row){
+            for (int col = 1; col < 9; ++col){
+                var position = new ChessPosition(row, col);
+                var piece = gameBoard.getPiece(position);
+                if (piece == null || piece.getTeamColor() != teamColor){
+                    continue;
+                }
+                if (!validMoves(position).isEmpty()){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
