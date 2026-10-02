@@ -18,7 +18,9 @@ public class ChessBoard {
     public ChessBoard(ChessBoard other){
         var newSquares = new ChessPiece[8][8];
         for (int row = 0; row < 8; ++row){
-            System.arraycopy(other.squares[row], 0, newSquares[row], 0, 8);
+            for (int col = 0; col < 8; ++col){
+                newSquares[row][col] = other.squares[row][col] == null ? null : new ChessPiece(other.squares[row][col]);
+            }
         }
         this.squares = newSquares;
     }
