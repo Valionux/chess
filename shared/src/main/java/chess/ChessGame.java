@@ -146,4 +146,24 @@ public class ChessGame {
     public int hashCode() {
         return Objects.hash(teamTurn, gameBoard);
     }
+
+
+    /**
+     * Makes a move in the game, regardless of whether it is legal
+     *
+     * @param move chess move to perform
+     */
+
+    private void makeAnyMove(ChessMove move){
+        var startPosition = move.getStartPosition();
+        var endPosition = move.getEndPosition();
+        var promotionPiece = move.getPromotionPiece();
+        var piece = gameBoard.getPiece(startPosition);
+        if (promotionPiece == null){
+            gameBoard.addPiece(endPosition, piece);
+        }else{
+            gameBoard.addPiece(endPosition, new ChessPiece(piece.getTeamColor(), promotionPiece));
+        }
+        gameBoard.addPiece(move.getStartPosition(), null);
+    }
 }
