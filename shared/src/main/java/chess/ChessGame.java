@@ -74,11 +74,24 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        switch (teamTurn){
-            case BLACK -> setTeamTurn(TeamColor.WHITE);
-            case WHITE -> setTeamTurn(TeamColor.BLACK);
+        var startPosition = move.getStartPosition();
+        var piece = gameBoard.getPiece(startPosition);
+        var legalMoves = validMoves(startPosition);
+        if (piece == null){
+            throw new InvalidMoveException("There us no piece on this square");
+        } else if (getTeamTurn() != piece.getTeamColor()) {
+            throw new InvalidMoveException("It is not this team's turn");
+        } else if (!legalMoves.contains(move)){
+            throw new InvalidMoveException("This move is not legal");
         }
-        throw new RuntimeException("Not implemented");
+
+        makeAnyMove(move);
+
+        if (teamTurn == TeamColor.BLACK){
+            setTeamTurn(TeamColor.WHITE);
+        }else{
+            setTeamTurn(TeamColor.BLACK);
+        }
     }
 
     /**
