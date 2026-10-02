@@ -54,10 +54,17 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        if(gameBoard.getPiece(startPosition) == null){
+        var piece = gameBoard.getPiece(startPosition);
+        if(piece == null){
             return null;
         }
-        throw new RuntimeException("Not implemented");
+        var possibleMoves = piece.pieceMoves(gameBoard, startPosition);
+        possibleMoves.removeIf(move -> {
+            var testGame = new ChessGame(this);
+            testGame.makeAnyMove(move);
+            return testGame.isInCheck(piece.getTeamColor());
+        });
+        return possibleMoves;
     }
 
     /**
@@ -67,6 +74,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        switch (teamTurn){
+            case BLACK -> setTeamTurn(TeamColor.WHITE);
+            case WHITE -> setTeamTurn(TeamColor.BLACK);
+        }
         throw new RuntimeException("Not implemented");
     }
 
