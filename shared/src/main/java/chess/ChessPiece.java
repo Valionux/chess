@@ -14,15 +14,20 @@ public class ChessPiece {
 
     private final ChessGame.TeamColor pieceColor;
     private final PieceType type;
+    private boolean hasMoved;
+
+    public static final PieceType[] SIDES = {PieceType.KING, PieceType.QUEEN};
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
         this.type = type;
+        this.hasMoved = false;
     }
 
     public ChessPiece(ChessPiece other){
         this.pieceColor = other.pieceColor;
         this.type = other.type;
+        this.hasMoved = other.hasMoved;
     }
 
     /**
@@ -51,6 +56,10 @@ public class ChessPiece {
         return type;
     }
 
+    public boolean getHasMoved(){
+        return hasMoved;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {
@@ -72,6 +81,7 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<>();
         int row = myPosition.getRow();
@@ -251,6 +261,14 @@ public class ChessPiece {
                 break;
         }
         return moves;
+    }
+
+    /**
+     * mark a piece as having moved
+     */
+
+    public void setHasMoved(){
+        this.hasMoved = true;
     }
 
     /**

@@ -64,4 +64,35 @@ public class ChessMove {
     public int hashCode() {
         return Objects.hash(startPosition, endPosition, promotionPiece);
     }
+
+    /**
+     * returns a castling move depending on the side and team
+     *
+     * @param team team of the castling King
+     * @param side side towards which the King is moving
+     * @return the castling move
+     */
+
+    public ChessMove castle(ChessGame.TeamColor team, ChessPiece.PieceType side){
+        var backRow = team == ChessGame.TeamColor.WHITE ? 1 : 8;
+        var movement = side == ChessPiece.PieceType.KING ? 2 : -2;
+        return new ChessMove(new ChessPosition(backRow, 5), new ChessPosition(backRow, 5 + movement), null);
+    }
+
+    /**
+     * Checks whether a move is a castle move
+     *
+     * @return piece type, KING if the move is king side, queen if queen side, null if the move is not a castle
+     */
+
+    public ChessPiece.PieceType castleSide(){
+        for (ChessGame.TeamColor team: ChessGame.TeamColor.values()){
+            for (ChessPiece.PieceType side: ChessPiece.SIDES){
+                if (this.equals(castle(team, side))){
+                    return side;
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -67,6 +68,9 @@ public class ChessGame {
             testGame.makeAnyMove(move);
             return testGame.isInCheck(piece.getTeamColor());
         });
+        if (piece.getPieceType() == ChessPiece.PieceType.KING || piece.getPieceType() == ChessPiece.PieceType.ROOK){
+            possibleMoves.addAll(allowedCastles(piece.getTeamColor()));
+        }
         return possibleMoves;
     }
 
@@ -95,6 +99,8 @@ public class ChessGame {
         }else{
             setTeamTurn(TeamColor.BLACK);
         }
+
+        piece.setHasMoved();
     }
 
     /**
@@ -192,6 +198,13 @@ public class ChessGame {
             gameBoard.addPiece(endPosition, new ChessPiece(piece.getTeamColor(), promotionPiece));
         }
         gameBoard.addPiece(move.getStartPosition(), null);
+
+        //Special moves
+
+        var castleSide = move.castleSide();
+        if(castleSide != null){
+            castleRookMove(piece.getTeamColor(), castleSide);
+        }
     }
 
     /**
@@ -215,5 +228,57 @@ public class ChessGame {
             }
         }
         return true;
+    }
+
+    /**
+     * Performs the rook's move in a castle
+     *
+     * @param team team the rook belongs to
+     * @param side side the rook is on (KING or QUEEN)
+     */
+
+    private void castleRookMove(TeamColor team, ChessPiece.PieceType side){
+        var backRow = team == ChessGame.TeamColor.WHITE ? 1 : 8;
+        var col = side == ChessPiece.PieceType.KING ? 8 : 1;
+        var movement = side == ChessPiece.PieceType.KING ? -2 : 3;
+        makeAnyMove(new ChessMove(new ChessPosition(backRow, col), new ChessPosition(backRow, col + movement), null));
+    }
+
+    /**
+     * Gives a list of the allowed castle moves for a certain team.
+     *
+     * @param team team which castling rights we're examining
+     * @return an empty list, kingside castle, queenside castle or both
+     */
+
+    private Collection<ChessMove> allowedCastles(TeamColor team){
+        ArrayList<ChessMove> castles = new ArrayList<>();
+        var backRow = team == ChessGame.TeamColor.WHITE ? 1 : 8;
+        var kingPosition = new ChessPosition(backRow, 5);
+        var king = gameBoard.getPiece(kingPosition);
+        if(king != null && king.getPieceType() == ChessPiece.PieceType.KING && !king.getHasMoved() && !isInCheck(team)){
+            for(int i = - 1; i < 2; i += 2){
+                var rookPosition = new ChessPosition(backRow, i == - 1 ? 1 : 8);
+                var rook = gameBoard.getPiece(rookPosition);
+                if(rook == null || rook.getPieceType() != ChessPiece.PieceType.ROOK || rook.getHasMoved()){
+                    continue;
+                }
+                var halfway = new ChessPosition(backRow, 5 + i);
+                var endPosition = new ChessPosition(backRow, 5 + 2*i);
+                var nextToRook = i == - 1 ? new ChessPosition(backRow, 2) : endPosition;
+                if(gameBoard.getPiece(halfway) != null || gameBoard.getPiece(nextToRook) != null || gameBoard.getPiece(endPosition) != null){
+                    continue;
+                }
+                var testGame = new ChessGame(this);
+                testGame.makeAnyMove(new ChessMove(kingPosition, halfway, null));
+                if(!testGame.isInCheck(team)){
+                    testGame.makeAnyMove(new ChessMove(halfway, endPosition, null));
+                    if(!testGame.isInCheck(team)){
+                        castles.add(new ChessMove(kingPosition, endPosition, null));
+                    }
+                }
+            }
+        }
+        return castles;
     }
 }
