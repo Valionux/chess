@@ -95,6 +95,9 @@ public class ChessGame {
         var startPosition = move.getStartPosition();
         var piece = gameBoard.getPiece(startPosition);
         var legalMoves = validMoves(startPosition);
+
+        //Handle wrong moves
+
         if (piece == null){
             throw new InvalidMoveException("There us no piece on this square");
         } else if (getTeamTurn() != piece.getTeamColor()) {
@@ -124,6 +127,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         var kingPosition = gameBoard.findKing(teamColor);
+        // Go through the whole board until a piece attacking the King is found
         for(int row = 1; row < 9; ++row){
             for(int col = 1; col < 9; ++col){
                 var position = new ChessPosition(row, col);
@@ -206,7 +210,7 @@ public class ChessGame {
         var promotionPiece = move.getPromotionPiece();
         var piece = gameBoard.getPiece(startPosition);
 
-        //Special moves
+        //Helper functions for special moves
 
         var castleSide = move.castleSide();
         if(castleSide != null){
@@ -216,6 +220,8 @@ public class ChessGame {
         if(isEnPassant(move)){
             gameBoard.addPiece(new ChessPosition(startPosition.getRow(), endPosition.getColumn()), null);
         }
+
+        //Actual move
 
         if (promotionPiece == null){
             gameBoard.addPiece(endPosition, piece);
@@ -274,13 +280,16 @@ public class ChessGame {
         var backRow = team == ChessGame.TeamColor.WHITE ? 1 : 8;
         var kingPosition = new ChessPosition(backRow, 5);
         var king = gameBoard.getPiece(kingPosition);
+        //Check whether the king is allowed to castle
         if(king != null && king.getPieceType() == ChessPiece.PieceType.KING && !king.getHasMoved() && !isInCheck(team)){
             for(int i = - 1; i < 2; i += 2){
+                //Check whether the rook is allowed to castle
                 var rookPosition = new ChessPosition(backRow, i == - 1 ? 1 : 8);
                 var rook = gameBoard.getPiece(rookPosition);
                 if(rook == null || rook.getPieceType() != ChessPiece.PieceType.ROOK || rook.getHasMoved()){
                     continue;
                 }
+                //Check whether the path is safe and empty
                 var halfway = new ChessPosition(backRow, 5 + i);
                 var endPosition = new ChessPosition(backRow, 5 + 2*i);
                 var nextToRook = i == - 1 ? new ChessPosition(backRow, 2) : endPosition;
@@ -300,6 +309,13 @@ public class ChessGame {
         return castles;
     }
 
+    /**
+     * Checks whether a move corresponds to an en passant move
+     *
+     * @param move move to examine
+     * @return boolean, true if en passant, false if not
+     */
+
     private boolean isEnPassant(ChessMove move){
         var thisPawn = gameBoard.getPiece(move.getStartPosition());
         var enemyPawnPosition = new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());
@@ -316,6 +332,15 @@ public class ChessGame {
                 lastMove.getEndPosition().equals(enemyPawnPosition)
                         && lastMove.getStartPosition().equals(enemyPawnLastPosition)); // Checks whether the last move was the enemy pawn moving forward
     }
+
+    /**
+     * Returns all legal en passant moves for a pawn.
+     * Empty if there are none, and has up to 2 elements (right en passant and left en passant)
+     *
+     * @param team team the pawn belongs to
+     * @param col column the pawn is in
+     * @return an ArrayList of the legal en passant moves the pawn may perform
+     */
 
     private Collection<ChessMove> allowedEnPassants(TeamColor team, int col){
         var enPassants = new ArrayList<ChessMove>();
