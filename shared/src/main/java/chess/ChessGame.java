@@ -15,6 +15,8 @@ public class ChessGame {
     TeamColor teamTurn = TeamColor.WHITE;
     ChessBoard gameBoard = new ChessBoard();
 
+    private ChessMove lastMove = null;
+
     public ChessGame() {
 
         gameBoard.resetBoard();
@@ -24,6 +26,7 @@ public class ChessGame {
     public ChessGame(ChessGame other){
         this.teamTurn = other.teamTurn;
         this.gameBoard = new ChessBoard(other.gameBoard);
+        this.lastMove = other.lastMove;
     }
 
     /**
@@ -68,9 +71,17 @@ public class ChessGame {
             testGame.makeAnyMove(move);
             return testGame.isInCheck(piece.getTeamColor());
         });
+
+        //Special moves
+
         if (piece.getPieceType() == ChessPiece.PieceType.KING || piece.getPieceType() == ChessPiece.PieceType.ROOK){
             possibleMoves.addAll(allowedCastles(piece.getTeamColor()));
         }
+
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN){
+            possibleMoves.addAll(allowedEnPassants(piece.getTeamColor(), startPosition.getColumn()));
+        }
+
         return possibleMoves;
     }
 
@@ -101,6 +112,8 @@ public class ChessGame {
         }
 
         piece.setHasMoved();
+
+        lastMove = move;
     }
 
     /**
@@ -192,12 +205,6 @@ public class ChessGame {
         var endPosition = move.getEndPosition();
         var promotionPiece = move.getPromotionPiece();
         var piece = gameBoard.getPiece(startPosition);
-        if (promotionPiece == null){
-            gameBoard.addPiece(endPosition, piece);
-        }else{
-            gameBoard.addPiece(endPosition, new ChessPiece(piece.getTeamColor(), promotionPiece));
-        }
-        gameBoard.addPiece(move.getStartPosition(), null);
 
         //Special moves
 
@@ -205,6 +212,17 @@ public class ChessGame {
         if(castleSide != null){
             castleRookMove(piece.getTeamColor(), castleSide);
         }
+
+        if(isEnPassant(move)){
+            gameBoard.addPiece(new ChessPosition(startPosition.getRow(), endPosition.getColumn()), null);
+        }
+
+        if (promotionPiece == null){
+            gameBoard.addPiece(endPosition, piece);
+        }else{
+            gameBoard.addPiece(endPosition, new ChessPiece(piece.getTeamColor(), promotionPiece));
+        }
+        gameBoard.addPiece(move.getStartPosition(), null);
     }
 
     /**
@@ -280,5 +298,40 @@ public class ChessGame {
             }
         }
         return castles;
+    }
+
+    private boolean isEnPassant(ChessMove move){
+        var thisPawn = gameBoard.getPiece(move.getStartPosition());
+        var enemyPawnPosition = new ChessPosition(move.getStartPosition().getRow(), move.getEndPosition().getColumn());
+        var enemyPawn = gameBoard.getPiece(enemyPawnPosition);
+        if(enemyPawn == null || thisPawn == null){
+            return false;
+        }
+        var enemyBackRow = enemyPawn.getTeamColor() == TeamColor.WHITE ? 2 : 7;
+        var enemyPawnLastPosition = new ChessPosition(enemyBackRow, enemyPawnPosition.getColumn());
+        return thisPawn.getPieceType() == ChessPiece.PieceType.PAWN
+                && enemyPawn.getPieceType() == ChessPiece.PieceType.PAWN
+                && enemyPawn.getTeamColor() != thisPawn.getTeamColor()
+                && (lastMove == null ||
+                lastMove.getEndPosition().equals(enemyPawnPosition)
+                        && lastMove.getStartPosition().equals(enemyPawnLastPosition)); // Checks whether the last move was the enemy pawn moving forward
+    }
+
+    private Collection<ChessMove> allowedEnPassants(TeamColor team, int col){
+        var enPassants = new ArrayList<ChessMove>();
+        int row = team == TeamColor.WHITE ? 5 : 4;
+        int forward = team == TeamColor.WHITE ? 1 : -1;
+        var startPosition = new ChessPosition(row, col);
+        for(int i = - 1; i < 2; i += 2){
+            var endPosition = new ChessPosition(row + forward, col + i);
+            if(!endPosition.isValid()){
+                continue;
+            }
+            var enPassant = new ChessMove(startPosition, endPosition, null);
+            if(isEnPassant(enPassant)){
+                enPassants.add(enPassant);
+            }
+        }
+        return enPassants;
     }
 }
