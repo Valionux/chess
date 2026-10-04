@@ -126,4 +126,39 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(squares);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder board = new StringBuilder();
+
+        for (int row = 8; row >= 1; row--) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPiece piece = getPiece(new ChessPosition(row, col));
+
+                board.append("|");
+
+                if (piece == null) {
+                    board.append(" ");
+                } else {
+                    char symbol = switch (piece.getPieceType()) {
+                        case KING -> 'k';
+                        case QUEEN -> 'q';
+                        case ROOK -> 'r';
+                        case BISHOP -> 'b';
+                        case KNIGHT -> 'n';
+                        case PAWN -> 'p';
+                    };
+
+                    if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+                        symbol = Character.toUpperCase(symbol);
+                    }
+
+                    board.append(symbol);
+                }
+            }
+            board.append("|\n");
+        }
+
+        return board.toString();
+    }
 }
