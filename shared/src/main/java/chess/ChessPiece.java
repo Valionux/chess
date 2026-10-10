@@ -241,8 +241,6 @@ class Knight extends ChessPiece {
     @Override
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition){
         ArrayList<ChessMove> moves = new ArrayList<>();
-        int row = myPosition.getRow();
-        int col = myPosition.getColumn();
 
         int[][] offsets = {
                 {-2, -1},
