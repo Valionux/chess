@@ -56,4 +56,8 @@ public class ChessPosition {
     public boolean isValid() {
         return row < 9 && col < 9 && row > 0 && col > 0;
     }
+
+    public ChessPosition addOffset(int[] offset){
+        return new ChessPosition(row + offset[0], col + offset[1]);
+    }
 }

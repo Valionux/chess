@@ -323,8 +323,8 @@ public class ChessGame {
         if(enemyPawn == null || thisPawn == null){
             return false;
         }
-        var enemyBackRow = enemyPawn.getTeamColor() == TeamColor.WHITE ? 2 : 7;
-        var enemyPawnLastPosition = new ChessPosition(enemyBackRow, enemyPawnPosition.getColumn());
+        var enemyStartRow = enemyPawn.getBackRow() + enemyPawn.getForward();
+        var enemyPawnLastPosition = new ChessPosition(enemyStartRow, enemyPawnPosition.getColumn());
         return thisPawn.getPieceType() == ChessPiece.PieceType.PAWN
                 && enemyPawn.getPieceType() == ChessPiece.PieceType.PAWN
                 && enemyPawn.getTeamColor() != thisPawn.getTeamColor()
