@@ -132,11 +132,12 @@ public class ChessGame {
             for(int col = 1; col < 9; ++col){
                 var position = new ChessPosition(row, col);
                 ChessPiece piece = gameBoard.getPiece(position);
-                if(piece != null && piece.getTeamColor() != teamColor){
-                    for(ChessMove move: piece.pieceMoves(gameBoard, position)){
-                        if(move.getEndPosition().equals(kingPosition)){
-                            return true;
-                        }
+                if(piece == null || piece.getTeamColor() == teamColor){
+                    continue;
+                }
+                for(ChessMove move: piece.pieceMoves(gameBoard, position)){
+                    if(move.getEndPosition().equals(kingPosition)){
+                        return true;
                     }
                 }
             }
@@ -330,7 +331,7 @@ public class ChessGame {
                 && enemyPawn.getTeamColor() != thisPawn.getTeamColor()
                 && (lastMove == null ||
                 lastMove.getEndPosition().equals(enemyPawnPosition)
-                        && lastMove.getStartPosition().equals(enemyPawnLastPosition)); // Checks whether the last move was the enemy pawn moving forward
+                        && lastMove.getStartPosition().equals(enemyPawnLastPosition)); //Checks whether the last move was the enemy moving forward
     }
 
     /**

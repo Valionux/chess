@@ -114,7 +114,11 @@ public class ChessPiece {
      *
      */
 
-    protected void addMove(ArrayList<ChessMove> moves, ChessBoard board, ChessPosition startPosition, ChessPosition endPosition, PieceType promotionType){
+    protected void addMove(ArrayList<ChessMove> moves,
+                           ChessBoard board,
+                           ChessPosition startPosition,
+                           ChessPosition endPosition,
+                           PieceType promotionType){
         if (endPosition.isValid() && (board.getPiece(endPosition) == null || board.getPiece(endPosition).getTeamColor() != this.getTeamColor())) {
             moves.add(new ChessMove(startPosition, endPosition, promotionType));
         }
