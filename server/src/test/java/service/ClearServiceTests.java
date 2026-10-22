@@ -10,13 +10,21 @@ import org.junit.jupiter.api.Test;
 
 public class ClearServiceTests {
 
-    AuthDAO authDAO = new MemoryAuthDAO();
-    GameDAO gameDAO = new MemoryGameDAO();
-    UserDAO userDAO = new MemoryUserDAO();
+    AuthDAO authDAO;
+    GameDAO gameDAO;
+    UserDAO userDAO;
 
-    ClearService clearService = new ClearService(authDAO, userDAO, gameDAO);
+    ClearService myService;
 
     @BeforeEach
+    void setUp() {
+        authDAO = new MemoryAuthDAO();
+        gameDAO = new MemoryGameDAO();
+        userDAO = new MemoryUserDAO();
+
+        myService = new ClearService(authDAO, userDAO, gameDAO);
+    }
+
     @Test
     @DisplayName("Clear non empty AuthDAO")
     public void clearAuthDAO() throws DataAccessException {
@@ -28,7 +36,7 @@ public class ClearServiceTests {
         authDAO.add(auth);
         userDAO.add(user);
         gameDAO.add(gameName);
-        clearService.clearDB();
+        myService.clearDB();
         Assertions.assertNull(authDAO.get(authToken));
         Assertions.assertNull(userDAO.get(username));
         Assertions.assertThrows(
