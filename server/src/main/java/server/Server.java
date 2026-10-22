@@ -52,4 +52,11 @@ public class Server {
         }
     }
 
+    private void clearDB(Context c) {
+        authService.clearDB();
+        userService.clearDB();
+        gameService.clearDB();
+
+        c.status(200);
+    }
 }
