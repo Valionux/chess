@@ -5,9 +5,9 @@ import model.Auth;
 public interface AuthDAO {
     void clear();
 
-    void creatAuth(Auth auth);
+    void add(Auth auth);
 
-    Auth getAuth(String authToken);
+    Auth get(String authToken);
 
-    void deleteAuth(String authToken);
+    void delete(String authToken);
 }

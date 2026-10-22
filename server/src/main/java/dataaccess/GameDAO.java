@@ -8,11 +8,11 @@ import java.util.Collection;
 public interface GameDAO {
     void clear();
 
-    void createGame(Game game);
+    void add(String gameName);
 
-    Game getGame(String gameID);
+    Game get(int gameID);
 
     Collection<Game> listGames();
 
-    void updateGame(ChessGame game, String gameID);
+    void addUserToGame(int gameID, String username, ChessGame.TeamColor teamColor);
 }

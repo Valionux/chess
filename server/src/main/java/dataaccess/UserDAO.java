@@ -5,7 +5,7 @@ import model.User;
 public interface UserDAO {
     void clear();
 
-    void createUser(User user);
+    void add(User user);
 
-    User getUser(String username);
+    User get(String username);
 }
