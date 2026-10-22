@@ -5,14 +5,16 @@ import org.junit.jupiter.api.BeforeEach;
 
 public class GameServiceTests {
 
-    GameDAO gameDAO = new MemoryGameDAO();
-    AuthDAO authDAO = new MemoryAuthDAO();
+    GameDAO gameDAO;
+    AuthDAO authDAO;
 
-    GameService myService = new GameService(gameDAO, authDAO);
+    GameService myService;
 
     @BeforeEach
-    void setUp() throws DataAccessException {
-        new ClearService(authDAO, new MemoryUserDAO(), gameDAO).clearDB();
-    }
+    void setUp() {
+        gameDAO = new MemoryGameDAO();
+        authDAO = new MemoryAuthDAO();
 
+        myService = new GameService(gameDAO, authDAO);
+    }
 }

@@ -5,9 +5,7 @@ import io.javalin.*;
 import io.javalin.http.Context;
 import org.jetbrains.annotations.NotNull;
 import request.RegisterRequest;
-import service.ClearService;
-import service.GameService;
-import service.UserService;
+import service.*;
 
 import java.util.Map;
 
@@ -19,16 +17,12 @@ public class Server {
     private final UserService userService;
     private final GameService gameService;
 
-    private final AuthDAO authDAO;
-    private final UserDAO userDAO;
-    private final GameDAO gameDAO;
-
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        authDAO = new MemoryAuthDAO();
-        userDAO = new MemoryUserDAO();
-        gameDAO = new MemoryGameDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
+        UserDAO userDAO = new MemoryUserDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
 
         clearService = new ClearService(authDAO, userDAO, gameDAO);
         userService = new UserService(userDAO, authDAO);
@@ -52,6 +46,8 @@ public class Server {
 
     private void exceptionHandler(Exception e, Context c) {
         switch (e) {
+            case IllegalArgumentException _ -> c.status(400).json(Map.of("message", "Error: bad request"));
+            case AlreadyTakenException _ -> c.status(403).json(Map.of("message", "Error: already taken"));
             default -> c.status(500).json(Map.of("msg", "Error: " + e.getMessage()));
         }
     }
@@ -62,8 +58,8 @@ public class Server {
         c.status(200);
     }
 
-    private void register(@NotNull Context c) {
-        c.bodyAsClass(RegisterRequest.class);
-
+    private void register(@NotNull Context c) throws IllegalArgumentException, DataAccessException, AlreadyTakenException {
+        var res = userService.register(c.bodyAsClass(RegisterRequest.class));
+        c.status(200).json(res);
     }
 }
