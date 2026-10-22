@@ -1,30 +1,18 @@
 package service;
 
-import chess.ChessGame;
-import dataaccess.GameDAO;
-import dataaccess.MemoryGameDAO;
-import model.Game;
-import model.User;
-import org.junit.jupiter.api.Assertions;
+import dataaccess.*;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
 public class GameServiceTests {
 
-    GameDAO myDAO = new MemoryGameDAO();
+    GameDAO gameDAO = new MemoryGameDAO();
+    AuthDAO authDAO = new MemoryAuthDAO();
 
-    GameService myService = new GameService(myDAO);
+    GameService myService = new GameService(gameDAO, authDAO);
 
     @BeforeEach
-    @Test
-    @DisplayName("Clear non empty GameDAO")
-    public void clearGameDAO() {
-        String gameName = "Doe's";
-        myDAO.add(gameName);
-        myService.clearDB();
-        Assertions.assertThrows(
-                IndexOutOfBoundsException.class,
-                () -> myDAO.get(0));
+    void setUp() throws DataAccessException {
+        new ClearService(authDAO, new MemoryUserDAO(), gameDAO).clearDB();
     }
+
 }

@@ -3,7 +3,9 @@ package server;
 import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
-import service.AuthService;
+import org.jetbrains.annotations.NotNull;
+import request.RegisterRequest;
+import service.ClearService;
 import service.GameService;
 import service.UserService;
 
@@ -13,7 +15,7 @@ public class Server {
 
     private final Javalin javalin;
 
-    private final AuthService authService;
+    private final ClearService clearService;
     private final UserService userService;
     private final GameService gameService;
 
@@ -28,13 +30,15 @@ public class Server {
         userDAO = new MemoryUserDAO();
         gameDAO = new MemoryGameDAO();
 
-        authService = new AuthService(authDAO);
-        userService = new UserService(userDAO);
-        gameService = new GameService(gameDAO);
+        clearService = new ClearService(authDAO, userDAO, gameDAO);
+        userService = new UserService(userDAO, authDAO);
+        gameService = new GameService(gameDAO, authDAO);
 
         javalin.exception(Exception.class, this::exceptionHandler);
 
-        javalin.delete("/db", this::clearDB);
+        javalin.delete("/db", this::clear);
+
+        javalin.post("/user", this::register);
     }
 
     public int run(int desiredPort) {
@@ -52,11 +56,14 @@ public class Server {
         }
     }
 
-    private void clearDB(Context c) {
-        authService.clearDB();
-        userService.clearDB();
-        gameService.clearDB();
+    private void clear(@NotNull Context c) throws DataAccessException {
+        clearService.clearDB();
 
         c.status(200);
+    }
+
+    private void register(@NotNull Context c) {
+        c.bodyAsClass(RegisterRequest.class);
+
     }
 }
