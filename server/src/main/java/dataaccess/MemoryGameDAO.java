@@ -21,7 +21,7 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public int add(String gameName) throws DataAccessException {
         try {
-            int gameID = gameData.size();
+            int gameID = gameData.size() + 1;
             gameData.add(new Game(gameID, null, null, gameName, new ChessGame()));
             return gameID;
         } catch (Exception e) {
@@ -32,7 +32,7 @@ public class MemoryGameDAO implements GameDAO {
     @Override
     public Game get(int gameID) throws DataAccessException {
         try {
-            return gameData.get(gameID);
+            return gameData.get(gameID - 1);
         } catch (Exception e) {
             throw new DataAccessException("Failed to retrieve game record", e);
         }
@@ -54,7 +54,14 @@ public class MemoryGameDAO implements GameDAO {
             ChessGame.TeamColor teamColor)
             throws DataAccessException {
         try {
-            System.out.println("Not implemented");
+            Game game = get(gameID);
+            Game newGame = new Game(
+                    gameID,
+                    teamColor == ChessGame.TeamColor.WHITE ? username : game.whiteUsername(),
+                    teamColor == ChessGame.TeamColor.BLACK ? username : game.blackUsername(),
+                    game.gameName(),
+                    game.game());
+            gameData.add(gameID - 1, newGame);
         } catch (Exception e) {
             throw new DataAccessException("Failed to insert user into the game record", e);
         }

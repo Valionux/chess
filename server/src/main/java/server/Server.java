@@ -7,6 +7,7 @@ import io.javalin.http.Context;
 import io.javalin.json.JavalinGson;
 import org.jetbrains.annotations.NotNull;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import service.*;
@@ -48,6 +49,8 @@ public class Server {
         javalin.get("/game", this::listGames);
 
         javalin.post("/game", this::createGame);
+
+        javalin.put("/game", this::joinGame);
     }
 
     public int run(int desiredPort) {
@@ -108,5 +111,11 @@ public class Server {
         String authToken = c.header("Authorization");
         var res = gameService.createGame(authToken, c.bodyAsClass(CreateGameRequest.class));
         c.status(200).json(Map.of("gameID", res));
+    }
+
+    private void joinGame(@NotNull Context c) throws UnauthorizedException, DataAccessException, AlreadyTakenException {
+        String authToken = c.header("Authorization");
+        gameService.joinGame(authToken, c.bodyAsClass(JoinGameRequest.class));
+        c.status(200);
     }
 }
