@@ -7,7 +7,7 @@ import java.util.*;
 
 public class MemoryGameDAO implements GameDAO {
 
-    private List<Game> gameData = new ArrayList<>();
+    private final List<Game> gameData = new ArrayList<>();
 
     @Override
     public void clear() throws DataAccessException {
@@ -37,7 +37,7 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public Collection<Game> listGames() throws DataAccessException {
+    public List<Game> listGames() throws DataAccessException {
         try {
             return gameData;
         } catch (Exception e) {
@@ -52,7 +52,7 @@ public class MemoryGameDAO implements GameDAO {
             ChessGame.TeamColor teamColor)
             throws DataAccessException {
         try {
-
+            System.out.println("Not implemented");
         } catch (Exception e) {
             throw new DataAccessException("Failed to insert user into the game record", e);
         }

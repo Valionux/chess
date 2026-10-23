@@ -43,6 +43,8 @@ public class Server {
         javalin.post("/session", this::login);
 
         javalin.delete("/session", this::logout);
+
+        javalin.get("/game", this::listGames);
     }
 
     public int run(int desiredPort) {
@@ -85,9 +87,17 @@ public class Server {
         c.status(200).json(res);
     }
 
-    private void logout(@NotNull Context c) throws UnauthorizedException, DataAccessException {
+    private void logout(@NotNull Context c)
+            throws UnauthorizedException,
+            DataAccessException {
         String authToken = c.header("Authorization");
         userService.logout(authToken);
         c.status(200);
+    }
+
+    private void listGames(@NotNull Context c) throws UnauthorizedException, DataAccessException {
+        String authToken = c.header("Authorization");
+        var list = gameService.listGame(authToken);
+        c.status(200).json(list);
     }
 }
