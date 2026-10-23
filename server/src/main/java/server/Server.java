@@ -6,6 +6,7 @@ import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.json.JavalinGson;
 import org.jetbrains.annotations.NotNull;
+import request.CreateGameRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import service.*;
@@ -45,6 +46,8 @@ public class Server {
         javalin.delete("/session", this::logout);
 
         javalin.get("/game", this::listGames);
+
+        javalin.post("/game", this::createGame);
     }
 
     public int run(int desiredPort) {
@@ -99,5 +102,11 @@ public class Server {
         String authToken = c.header("Authorization");
         var list = gameService.listGame(authToken);
         c.status(200).json(list);
+    }
+
+    private void createGame(@NotNull Context c) throws UnauthorizedException, DataAccessException {
+        String authToken = c.header("Authorization");
+        var res = gameService.createGame(authToken, c.bodyAsClass(CreateGameRequest.class));
+        c.status(200).json(Map.of("gameID", res));
     }
 }

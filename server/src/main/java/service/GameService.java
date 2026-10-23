@@ -4,6 +4,7 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import model.Game;
+import request.CreateGameRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,5 +37,21 @@ public class GameService {
         }
 
         return gamesNoChess;
+    }
+
+    public int createGame(String authToken, CreateGameRequest req)
+            throws DataAccessException,
+            UnauthorizedException {
+        String gameName = req.gameName();
+
+        if (authDAO.get(authToken) == null) {
+            throw new UnauthorizedException("Wrong authentification token");
+        }
+
+        if (gameName == null) {
+            throw new IllegalArgumentException("A game name must be provided");
+        }
+
+        return gameDAO.add(gameName);
     }
 }

@@ -4,6 +4,7 @@ import dataaccess.*;
 import model.Auth;
 import model.Game;
 import org.junit.jupiter.api.*;
+import request.CreateGameRequest;
 
 public class GameServiceTests {
 
@@ -42,6 +43,38 @@ public class GameServiceTests {
                     gameName,
                     first.gameName());
             Assertions.assertNull(first.game());
+        }
+    }
+
+    @Nested
+    class CreateGameTests {
+
+        String authToken = "AT";
+        String gameName = "John's game";
+        String username = "John Doe";
+        CreateGameRequest gameReq = new CreateGameRequest(gameName);
+
+        @Test
+        @DisplayName("Wrong authentification token")
+        void wrongAuthToken() {
+            Assertions.assertThrows(UnauthorizedException.class,
+                    () -> myService.createGame("Behold my auth token", gameReq));
+        }
+
+        @Test
+        @DisplayName("No game name")
+        void misingArgument() throws DataAccessException {
+            authDAO.add(new Auth(authToken, username));
+            Assertions.assertThrows(IllegalArgumentException.class,
+                    () -> myService.createGame(authToken, new CreateGameRequest(null)));
+        }
+
+        @Test
+        @DisplayName("Adding a game")
+        void addGame() throws DataAccessException {
+            authDAO.add(new Auth(authToken, username));
+            Assertions.assertDoesNotThrow(
+                    () -> myService.createGame(authToken, gameReq));
         }
     }
 }

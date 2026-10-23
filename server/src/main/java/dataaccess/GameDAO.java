@@ -8,7 +8,7 @@ import java.util.List;
 public interface GameDAO {
     void clear() throws DataAccessException;
 
-    void add(String gameName) throws DataAccessException;
+    int add(String gameName) throws DataAccessException;
 
     Game get(int gameID) throws DataAccessException;
 

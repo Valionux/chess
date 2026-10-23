@@ -19,9 +19,11 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void add(String gameName) throws DataAccessException {
+    public int add(String gameName) throws DataAccessException {
         try {
-            gameData.add(new Game(gameData.size(), null, null, gameName, new ChessGame()));
+            int gameID = gameData.size();
+            gameData.add(new Game(gameID, null, null, gameName, new ChessGame()));
+            return gameID;
         } catch (Exception e) {
             throw new DataAccessException("Failed to insert game record", e);
         }
