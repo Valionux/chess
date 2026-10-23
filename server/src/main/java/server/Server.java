@@ -1,6 +1,5 @@
 package server;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.*;
 import io.javalin.*;
@@ -42,6 +41,8 @@ public class Server {
         javalin.post("/user", this::register);
 
         javalin.post("/session", this::login);
+
+        javalin.delete("/session", this::logout);
     }
 
     public int run(int desiredPort) {
@@ -82,5 +83,11 @@ public class Server {
             UnauthorizedException {
         var res = userService.login(c.bodyAsClass(LoginRequest.class));
         c.status(200).json(res);
+    }
+
+    private void logout(@NotNull Context c) throws UnauthorizedException, DataAccessException {
+        String authToken = c.header("Authorization");
+        userService.logout(authToken);
+        c.status(200);
     }
 }

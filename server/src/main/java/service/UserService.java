@@ -64,6 +64,12 @@ public class UserService {
         return new LoginResult(username, authToken);
     }
 
+    public void logout(String authToken) throws DataAccessException, UnauthorizedException {
+        if (authDAO.delete(authToken) == null) {
+            throw new UnauthorizedException("Wrong authentification token");
+        }
+    }
+
     private String startSession(String username) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
         authDAO.add(new Auth(authToken, username));

@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.Auth;
+import service.UnauthorizedException;
 
 public interface AuthDAO {
     void clear() throws DataAccessException;
@@ -9,5 +10,5 @@ public interface AuthDAO {
 
     Auth get(String authToken) throws DataAccessException;
 
-    void delete(String authToken) throws DataAccessException;
+    Auth delete(String authToken) throws DataAccessException, UnauthorizedException;
 }

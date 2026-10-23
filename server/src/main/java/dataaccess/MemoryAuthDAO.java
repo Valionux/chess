@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class MemoryAuthDAO implements AuthDAO {
 
-    private Map<String, Auth> authData = new HashMap<>();
+    private final Map<String, Auth> authData = new HashMap<>();
 
     @Override
     public void clear() throws DataAccessException {
@@ -37,9 +37,9 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void delete(String authToken) throws DataAccessException {
+    public Auth delete(String authToken) throws DataAccessException {
         try {
-            authData.remove(authToken);
+            return authData.remove(authToken);
         } catch (Exception e) {
             throw new DataAccessException("Failed to delete authentification record", e);
         }
