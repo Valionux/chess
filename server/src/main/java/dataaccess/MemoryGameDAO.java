@@ -61,7 +61,7 @@ public class MemoryGameDAO implements GameDAO {
                     teamColor == ChessGame.TeamColor.BLACK ? username : game.blackUsername(),
                     game.gameName(),
                     game.game());
-            gameData.add(gameID - 1, newGame);
+            gameData.set(gameID - 1, newGame);
         } catch (Exception e) {
             throw new DataAccessException("Failed to insert user into the game record", e);
         }
