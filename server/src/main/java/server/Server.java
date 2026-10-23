@@ -104,7 +104,7 @@ public class Server {
     private void listGames(@NotNull Context c) throws UnauthorizedException, DataAccessException {
         String authToken = c.header("Authorization");
         var list = gameService.listGame(authToken);
-        c.status(200).json(list);
+        c.status(200).json(Map.of("games", list));
     }
 
     private void createGame(@NotNull Context c) throws UnauthorizedException, DataAccessException {
