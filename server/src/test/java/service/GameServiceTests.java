@@ -24,7 +24,7 @@ public class GameServiceTests {
     }
 
     @Nested
-    class listGameTests {
+    class ListGameTests {
 
         @Test
         @DisplayName("Wrong authentification token")
