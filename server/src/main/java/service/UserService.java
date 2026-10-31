@@ -5,12 +5,12 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.Auth;
 import model.User;
+import org.mindrot.jbcrypt.BCrypt;
 import request.LoginRequest;
 import request.RegisterRequest;
 import response.LoginResult;
 import response.RegisterResult;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class UserService {
@@ -37,7 +37,9 @@ public class UserService {
             throw new AlreadyTakenException("This username is already taken");
         }
 
-        userDAO.add(new User(username, password, email));
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
+        userDAO.add(new User(username, hashedPassword, email));
 
         String authToken = startSession(username);
 
@@ -55,7 +57,7 @@ public class UserService {
         var user = userDAO.get(username);
 
         if (user == null
-                || !Objects.equals(user.password(), password)) {
+                || !verifyUser(user, password)) {
             throw new UnauthorizedException("Username or password incorrect");
         }
 
@@ -74,5 +76,11 @@ public class UserService {
         String authToken = UUID.randomUUID().toString();
         authDAO.add(new Auth(authToken, username));
         return authToken;
+    }
+
+    private boolean verifyUser(User user, String providedPassword) {
+        var hashedPassword = user.password();
+
+        return BCrypt.checkpw(providedPassword, hashedPassword);
     }
 }
