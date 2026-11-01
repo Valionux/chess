@@ -33,10 +33,8 @@ public class SQLAuthDAOTests {
             DAO.add(auth);
             DAO.add(new Auth("bogus2", "John2"));
             DAO.clear();
-            Assertions.assertThrows(DataAccessException.class,
-                    () -> DAO.get("bogus1"));
-            Assertions.assertThrows(DataAccessException.class,
-                    () -> DAO.get("bogus2"));
+            Assertions.assertNull(DAO.get("bogus1"));
+            Assertions.assertNull(DAO.get("bogus2"));
         }
     }
 
@@ -61,12 +59,13 @@ public class SQLAuthDAOTests {
     }
 
     @Nested
-    class GetTests {
-
-    }
-
-    @Nested
     class DeleteTests {
-
+        @Test
+        @DisplayName("Adding and deleting an Auth")
+        void addAuth() throws DataAccessException {
+            DAO.add(auth);
+            DAO.delete(auth.authToken());
+            Assertions.assertNull(DAO.get(auth.authToken()));
+        }
     }
 }

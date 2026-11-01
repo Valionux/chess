@@ -4,10 +4,8 @@ import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import model.Auth;
-import service.UnauthorizedException;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public class SQLAuthDAO implements AuthDAO {
 
@@ -38,17 +36,44 @@ public class SQLAuthDAO implements AuthDAO {
                 preparedStatement.executeUpdate();
             }
         } catch (Exception e) {
-            throw new DataAccessException("Could not clear database", e);
+            throw new DataAccessException("Could not add auth record", e);
         }
     }
 
     @Override
     public Auth get(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT authToken, username " +
+                    "FROM auth " +
+                    "WHERE authtoken = ?")) {
+                preparedStatement.setString(1, authToken);
+                try (var rs = preparedStatement.executeQuery()) {
+                    while (rs.next()) {
+                        var resAuthToken = rs.getString("authToken");
+                        var resUsername = rs.getString("username");
+
+                        return new Auth(resAuthToken, resUsername);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("could not get auth record", e);
+        }
         return null;
     }
 
     @Override
-    public Auth delete(String authToken) throws DataAccessException, UnauthorizedException {
+    public Auth delete(String authToken) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement =
+                         conn.prepareStatement("DELETE FROM auth " +
+                                 "WHERE authToken = ?")) {
+                preparedStatement.setString(1, authToken);
+                preparedStatement.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException("could not delete auth record", e);
+        }
         return null;
     }
 
