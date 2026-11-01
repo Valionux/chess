@@ -13,7 +13,11 @@ public class DatabaseManager {
      * Load the database information for the db.properties file.
      */
     static {
-        loadPropertiesFromResources();
+        loadPropertiesFromResources("db.properties");
+    }
+
+    public static void useTestDatabase() {
+        loadPropertiesFromResources("db-tests.properties");
     }
 
     /**
@@ -41,7 +45,7 @@ public class DatabaseManager {
      * }
      * </code>
      */
-    static Connection getConnection() throws DataAccessException {
+    public static Connection getConnection() throws DataAccessException {
         try {
             //do not wrap the following line with a try-with-resources
             var conn = DriverManager.getConnection(connectionUrl, dbUsername, dbPassword);
@@ -52,8 +56,8 @@ public class DatabaseManager {
         }
     }
 
-    private static void loadPropertiesFromResources() {
-        try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
+    private static void loadPropertiesFromResources(String filename) {
+        try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename)) {
             if (propStream == null) {
                 throw new Exception("Unable to load db.properties");
             }
