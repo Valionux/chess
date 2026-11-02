@@ -2,6 +2,9 @@ package server;
 
 import com.google.gson.JsonSyntaxException;
 import dataaccess.*;
+import dataaccess.sql.SQLAuthDAO;
+import dataaccess.sql.SQLGameDAO;
+import dataaccess.sql.SQLUserDAO;
 import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.json.JavalinGson;
@@ -28,9 +31,16 @@ public class Server {
             config.jsonMapper(new JavalinGson());
         });
 
-        AuthDAO authDAO = new MemoryAuthDAO();
-        UserDAO userDAO = new MemoryUserDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
+        AuthDAO authDAO = null;
+        UserDAO userDAO = null;
+        GameDAO gameDAO = null;
+        try {
+            authDAO = new SQLAuthDAO();
+            userDAO = new SQLUserDAO();
+            gameDAO = new SQLGameDAO();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         clearService = new ClearService(authDAO, userDAO, gameDAO);
         userService = new UserService(userDAO, authDAO);
