@@ -13,11 +13,7 @@ public class DatabaseManager {
      * Load the database information for the db.properties file.
      */
     static {
-        loadPropertiesFromResources("db.properties");
-    }
-
-    public static void useTestDatabase() {
-        loadPropertiesFromResources("db-tests.properties");
+        loadPropertiesFromResources();
     }
 
     /**
@@ -56,8 +52,8 @@ public class DatabaseManager {
         }
     }
 
-    private static void loadPropertiesFromResources(String filename) {
-        try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(filename)) {
+    private static void loadPropertiesFromResources() {
+        try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
             if (propStream == null) {
                 throw new Exception("Unable to load db.properties");
             }

@@ -14,7 +14,6 @@ public class SQLAuthDAOTests {
 
     @BeforeAll
     static void setUp() {
-        DatabaseManager.useTestDatabase();
     }
 
     @AfterEach

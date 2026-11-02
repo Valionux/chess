@@ -15,7 +15,6 @@ public class SQLUserDAOTests {
 
     @BeforeAll
     static void setUp() {
-        DatabaseManager.useTestDatabase();
     }
 
     @AfterEach

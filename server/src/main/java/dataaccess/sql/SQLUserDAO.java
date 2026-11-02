@@ -10,7 +10,7 @@ import java.sql.Connection;
 
 public class SQLUserDAO implements UserDAO {
 
-    SQLUserDAO() throws DataAccessException {
+    public SQLUserDAO() throws DataAccessException {
         configureDatabase();
     }
 
