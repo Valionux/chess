@@ -31,9 +31,9 @@ public class Server {
             config.jsonMapper(new JavalinGson());
         });
 
-        AuthDAO authDAO = null;
-        UserDAO userDAO = null;
-        GameDAO gameDAO = null;
+        AuthDAO authDAO;
+        UserDAO userDAO;
+        GameDAO gameDAO;
         try {
             authDAO = new SQLAuthDAO();
             userDAO = new SQLUserDAO();

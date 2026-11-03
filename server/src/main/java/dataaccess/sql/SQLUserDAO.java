@@ -3,7 +3,6 @@ package dataaccess.sql;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.UserDAO;
-import model.Auth;
 import model.User;
 
 import java.sql.Connection;
@@ -50,7 +49,7 @@ public class SQLUserDAO implements UserDAO {
                     "WHERE username = ?")) {
                 preparedStatement.setString(1, username);
                 try (var rs = preparedStatement.executeQuery()) {
-                    while (rs.next()) {
+                    if (rs.next()) {
                         var resUsername = rs.getString("username");
                         var resPassword = rs.getString("password");
                         var resEmail = rs.getString("email");

@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
-import model.Auth;
 import model.Game;
 
 import java.sql.Connection;
@@ -66,7 +65,7 @@ public class SQLGameDAO implements GameDAO {
                             "WHERE id = ?")) {
                 preparedStatement.setInt(1, gameID);
                 try (var rs = preparedStatement.executeQuery()) {
-                    while (rs.next()) {
+                    if (rs.next()) {
                         var resId = rs.getInt("id");
                         var resWhiteUsername = rs.getString("whiteUsername");
                         var resBlackUsername = rs.getString("blackUsername");
