@@ -12,10 +12,25 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import static dataaccess.sql.DAOUtils.configureDatabase;
+
 public class SQLGameDAO implements GameDAO {
 
     public SQLGameDAO() throws DataAccessException {
-        configureDatabase();
+        String[] createStatements = {
+                """
+            CREATE TABLE IF NOT EXISTS  game (
+              `id` int NOT NULL AUTO_INCREMENT,
+              `whiteUsername` varchar(256),
+              `blackUsername` varchar(256),
+              `gameName` varchar(256) NOT NULL,
+              `chessGame` longtext NOT NULL,
+              PRIMARY KEY (`id`),
+              INDEX(id)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci AUTO_INCREMENT = 1
+            """
+        };
+        configureDatabase(createStatements);
     }
 
     @Override
@@ -126,30 +141,4 @@ public class SQLGameDAO implements GameDAO {
         }
     }
 
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  game (
-              `id` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256),
-              `blackUsername` varchar(256),
-              `gameName` varchar(256) NOT NULL,
-              `chessGame` longtext NOT NULL,
-              PRIMARY KEY (`id`),
-              INDEX(id)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci AUTO_INCREMENT = 1
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (Exception ex) {
-            throw new DataAccessException("could not configure the database");
-        }
-    }
 }

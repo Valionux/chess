@@ -7,10 +7,22 @@ import model.Auth;
 
 import java.sql.Connection;
 
+import static dataaccess.sql.DAOUtils.configureDatabase;
+
 public class SQLAuthDAO implements AuthDAO {
 
     public SQLAuthDAO() throws DataAccessException {
-        configureDatabase();
+        String[] createStatements = {
+                """
+            CREATE TABLE IF NOT EXISTS  auth (
+              `authToken` varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL,
+              PRIMARY KEY (`authToken`),
+              INDEX(authToken)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+            """
+        };
+        configureDatabase(createStatements);
     }
 
     @Override
@@ -76,27 +88,4 @@ public class SQLAuthDAO implements AuthDAO {
         }
     }
 
-    private final String[] createStatements = {
-            """
-            CREATE TABLE IF NOT EXISTS  auth (
-              `authToken` varchar(256) NOT NULL,
-              `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`authToken`),
-              INDEX(authToken)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-            """
-    };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            for (String statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (Exception ex) {
-            throw new DataAccessException("could not configure the database");
-        }
-    }
 }

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.*;
 
 public class SQLGameDAOTests {
 
-    SQLGameDAO DAO = new SQLGameDAO();
+    SQLGameDAO gameDAO = new SQLGameDAO();
 
     public SQLGameDAOTests() throws DataAccessException {
     }
@@ -18,7 +18,7 @@ public class SQLGameDAOTests {
 
     @AfterEach
     void cleanUp() throws DataAccessException {
-        DAO.clear();
+        gameDAO.clear();
     }
 
     Game game = new Game(1, null, null, "game", new ChessGame());
@@ -29,11 +29,11 @@ public class SQLGameDAOTests {
         @Test
         @DisplayName("Adding Games and clearing them")
         void addAndClear() throws DataAccessException {
-            var id1 = DAO.add("game");
-            var id2 = DAO.add("game1");
-            DAO.clear();
-            Assertions.assertNull(DAO.get(id1));
-            Assertions.assertNull(DAO.get(id2));
+            var id1 = gameDAO.add("game");
+            var id2 = gameDAO.add("game1");
+            gameDAO.clear();
+            Assertions.assertNull(gameDAO.get(id1));
+            Assertions.assertNull(gameDAO.get(id2));
         }
     }
 
@@ -43,8 +43,8 @@ public class SQLGameDAOTests {
         @Test
         @DisplayName("Adding a Game")
         void addGame() throws DataAccessException {
-            var id = DAO.add("game");
-            var resGame = DAO.get(id);
+            var id = gameDAO.add("game");
+            var resGame = gameDAO.get(id);
             Assertions.assertEquals(game,
                     resGame);
         }
@@ -53,7 +53,7 @@ public class SQLGameDAOTests {
         @DisplayName("Adding a wrong Game")
         void addWrongAuth() {
             Assertions.assertThrows(DataAccessException.class,
-                    () -> DAO.add(null));
+                    () -> gameDAO.add(null));
         }
     }
 
@@ -63,9 +63,9 @@ public class SQLGameDAOTests {
         @Test
         @DisplayName("Adding a user to a game")
         void addUser() throws DataAccessException {
-            var id = DAO.add("game");
-            DAO.addUserToGame(id, "John", ChessGame.TeamColor.WHITE);
-            Assertions.assertEquals("John", DAO.get(id).whiteUsername());
+            var id = gameDAO.add("game");
+            gameDAO.addUserToGame(id, "John", ChessGame.TeamColor.WHITE);
+            Assertions.assertEquals("John", gameDAO.get(id).whiteUsername());
         }
     }
 }

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.*;
 
 public class SQLUserDAOTests {
 
-    SQLUserDAO DAO = new SQLUserDAO();
+    SQLUserDAO userDAO = new SQLUserDAO();
 
     public SQLUserDAOTests() throws DataAccessException {
     }
@@ -17,7 +17,7 @@ public class SQLUserDAOTests {
 
     @AfterEach
     void cleanUp() throws DataAccessException {
-        DAO.clear();
+        userDAO.clear();
     }
 
     User user = new User("John1", "1234", "y@gmail.com");
@@ -28,11 +28,11 @@ public class SQLUserDAOTests {
         @Test
         @DisplayName("Adding Users and clearing them")
         void addAndClear() throws DataAccessException {
-            DAO.add(user);
-            DAO.add(new User("bogus2", "John2", "email@boof"));
-            DAO.clear();
-            Assertions.assertNull(DAO.get("John1"));
-            Assertions.assertNull(DAO.get("bogus2"));
+            userDAO.add(user);
+            userDAO.add(new User("bogus2", "John2", "email@boof"));
+            userDAO.clear();
+            Assertions.assertNull(userDAO.get("John1"));
+            Assertions.assertNull(userDAO.get("bogus2"));
         }
     }
 
@@ -42,17 +42,17 @@ public class SQLUserDAOTests {
         @Test
         @DisplayName("Adding a User")
         void addAuth() throws DataAccessException {
-            DAO.add(user);
-            User John1 = DAO.get("John1");
+            userDAO.add(user);
+            User john1 = userDAO.get("john1");
             Assertions.assertEquals(user,
-                    new User(John1.username(), John1.password(), John1.email()));
+                    new User(john1.username(), john1.password(), john1.email()));
         }
 
         @Test
         @DisplayName("Adding a wrong User")
         void addWrongUser() {
             Assertions.assertThrows(DataAccessException.class,
-                    () -> DAO.add(new User("bogus1", null, null)));
+                    () -> userDAO.add(new User("bogus1", null, null)));
         }
     }
 }
