@@ -78,6 +78,9 @@ public class GameService {
 
         try {
             game = gameDAO.get(gameID);
+            if (game == null) {
+                throw new IllegalArgumentException("wrong game id");
+            }
         } catch (DataAccessException e) {
             if (e.getCause() instanceof IndexOutOfBoundsException) {
                 throw new IllegalArgumentException("A game Id must be provided", e);

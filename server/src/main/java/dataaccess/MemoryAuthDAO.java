@@ -37,9 +37,9 @@ public class MemoryAuthDAO implements AuthDAO {
     }
 
     @Override
-    public Auth delete(String authToken) throws DataAccessException {
+    public boolean delete(String authToken) throws DataAccessException {
         try {
-            return authData.remove(authToken);
+            return authData.remove(authToken) != null;
         } catch (Exception e) {
             throw new DataAccessException("Failed to delete authentification record", e);
         }

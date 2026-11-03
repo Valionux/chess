@@ -78,7 +78,7 @@ public class Server {
                     c.status(400).json(Map.of("message", "Error: bad request"));
             case AlreadyTakenException _ -> c.status(403).json(Map.of("message", "Error: already taken"));
             case UnauthorizedException _ -> c.status(401).json(Map.of("message", "Error: unauthorized"));
-            default -> c.status(500).json(Map.of("msg", "Error: " + e.getMessage()));
+            default -> c.status(500).json(Map.of("message", "Error: " + e.getMessage()));
         }
     }
 

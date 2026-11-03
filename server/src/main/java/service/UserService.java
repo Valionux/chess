@@ -67,7 +67,7 @@ public class UserService {
     }
 
     public void logout(String authToken) throws DataAccessException, UnauthorizedException {
-        if (authDAO.delete(authToken) == null) {
+        if (!authDAO.delete(authToken)) {
             throw new UnauthorizedException("Wrong authentification token");
         }
     }
