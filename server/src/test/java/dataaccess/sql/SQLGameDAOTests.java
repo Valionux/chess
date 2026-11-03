@@ -5,6 +5,9 @@ import dataaccess.DataAccessException;
 import model.Game;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SQLGameDAOTests {
 
     SQLGameDAO gameDAO = new SQLGameDAO();
@@ -66,6 +69,21 @@ public class SQLGameDAOTests {
             var id = gameDAO.add("game");
             gameDAO.addUserToGame(id, "John", ChessGame.TeamColor.WHITE);
             Assertions.assertEquals("John", gameDAO.get(id).whiteUsername());
+        }
+    }
+
+    @Nested
+    class ListGameTests {
+
+        @Test
+        @DisplayName("Adding Games and retrieving them")
+        void listGames() throws DataAccessException {
+            gameDAO.add("game");
+            gameDAO.add("game1");
+            ArrayList<Game> games = new ArrayList<>(List.of(
+                    game,
+                    new Game(2, null, null, "game1", new ChessGame())));
+            Assertions.assertEquals(games, gameDAO.listGames());
         }
     }
 }
