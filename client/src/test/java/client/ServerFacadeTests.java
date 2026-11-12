@@ -40,8 +40,8 @@ public class ServerFacadeTests {
     class RegisterTests {
         @Test
         @DisplayName("Successful register")
-        public void registerSuccess() {
-            Assertions.assertDoesNotThrow(() ->
+        public void registerSuccess() throws AlreadyTakenException {
+            Assertions.assertEquals("testUser",
                     facade.register(
                             "testUser",
                             "password123",
@@ -79,7 +79,8 @@ public class ServerFacadeTests {
 
             facade.logout();
 
-            Assertions.assertDoesNotThrow(() ->
+            Assertions.assertEquals(
+                    "testUser",
                     facade.login("testUser", "password123")
             );
         }
@@ -164,7 +165,9 @@ public class ServerFacadeTests {
         public void createGameSuccess() throws Exception {
             facade.register("testUser", "password123", "test@email.com");
 
-            Assertions.assertDoesNotThrow(() -> facade.createGame("My Game"));
+            Assertions.assertEquals(
+                    facade.createGame("My Game"),
+                    1);
         }
 
         @Test
