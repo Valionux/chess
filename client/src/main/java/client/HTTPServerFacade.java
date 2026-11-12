@@ -1,6 +1,8 @@
 package client;
 
+import chess.ChessGame;
 import client.model.request.CreateRequest;
+import client.model.request.JoinRequest;
 import client.model.request.LoginRequest;
 import client.model.request.RegisterRequest;
 import client.model.response.CreateResponse;
@@ -25,7 +27,6 @@ public class HTTPServerFacade implements ServerFacade {
     private final String serverUrl;
     private final Gson gson = new Gson();
     private String authToken;
-    private String username;
     private final List<Integer> gameIDs = new ArrayList<>();
 
     public HTTPServerFacade(String serverUrl) {
@@ -54,7 +55,6 @@ public class HTTPServerFacade implements ServerFacade {
                 );
 
                 this.authToken = result.authToken();
-                this.username = result.username();
             } else if (response.statusCode() == 400) {
                 throw new IllegalArgumentException("Wrong arguments");
             } else if (response.statusCode() == 403) {
@@ -81,9 +81,6 @@ public class HTTPServerFacade implements ServerFacade {
                     HttpResponse.BodyHandlers.ofString()
             );
 
-            System.out.println("Status: " + response.statusCode());
-            System.out.println("Body: " + response.body());
-
             if (response.statusCode() == 200) {
                 LoginResponse result = gson.fromJson(
                         response.body(),
@@ -91,7 +88,6 @@ public class HTTPServerFacade implements ServerFacade {
                 );
 
                 this.authToken = result.authToken();
-                this.username = result.username();
             } else if (response.statusCode() == 401) {
                 throw new UnauthorizedException("Username or password is incorrect");
             } else if (response.statusCode() == 400) {
@@ -223,7 +219,33 @@ public class HTTPServerFacade implements ServerFacade {
     }
 
     @Override
-    public void joinGame(int gameID, String color) {
+    public void joinGame(ChessGame.TeamColor color, int gameID) throws UnauthorizedException, AlreadyTakenException {
+        try {
+            String body = gson.toJson(new JoinRequest(color, gameID));
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(serverUrl + "/game"))
+                    .header("Authorization", authToken)
+                    .PUT(HttpRequest.BodyPublishers.ofString(body))
+                    .build();
 
+            HttpResponse<String> response = httpClient.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            if (response.statusCode() != 200) {
+                if (response.statusCode() == 400) {
+                    throw new IllegalArgumentException("Wrong arguments");
+                } else if (response.statusCode() == 401) {
+                    throw new UnauthorizedException("Username or password is incorrect");
+                } else if (response.statusCode() == 403) {
+                    throw new AlreadyTakenException("Username already taken");
+                } else {
+                    throw new ServerException("Could not communicate with server");
+                }
+            }
+        } catch (IOException | InterruptedException e) {
+            throw new ServerException("Could not communicate with server");
+        }
     }
 }

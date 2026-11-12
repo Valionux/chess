@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import model.Game;
 import service.AlreadyTakenException;
 import service.UnauthorizedException;
@@ -20,5 +21,5 @@ public interface ServerFacade {
 
     List<Game> listGames() throws UnauthorizedException;
 
-    void joinGame(int gameID, String color);
+    void joinGame(ChessGame.TeamColor color, int gameID) throws UnauthorizedException, AlreadyTakenException;
 }

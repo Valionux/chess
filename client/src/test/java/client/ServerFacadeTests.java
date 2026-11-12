@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import model.Game;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -230,6 +231,72 @@ public class ServerFacadeTests {
             Assertions.assertNull(game.whiteUsername());
             Assertions.assertNull(game.blackUsername());
             Assertions.assertTrue(game.gameID() > 0);
+        }
+    }
+
+    @Nested
+    class JoinGameTests {
+        @Test
+        @DisplayName("Successfully joining a game")
+        public void joinGameSuccess() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+            facade.createGame("My Game");
+
+            List<Game> games = facade.listGames();
+            int gameID = games.getFirst().gameID();
+
+            Assertions.assertDoesNotThrow(() -> facade.joinGame(ChessGame.TeamColor.WHITE, gameID));
+        }
+
+        @Test
+        @DisplayName("Join game without being logged in")
+        public void joinGameUnauthorized() {
+            Assertions.assertThrows(
+                    UnauthorizedException.class,
+                    () -> facade.joinGame(ChessGame.TeamColor.WHITE, 1)
+            );
+        }
+
+        @Test
+        @DisplayName("Join a game that has a white player as white")
+        public void joinGameAlreadyTaken() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+            facade.createGame("My Game");
+
+            int gameID = facade.listGames().getFirst().gameID();
+
+            facade.joinGame(ChessGame.TeamColor.WHITE, gameID);
+
+            Assertions.assertThrows(
+                    AlreadyTakenException.class,
+                    () -> facade.joinGame(ChessGame.TeamColor.WHITE, gameID)
+            );
+        }
+
+        @Test
+        @DisplayName("Join game twice with different colors")
+        public void joinGameDifferentColors() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+            facade.createGame("My Game");
+
+            int gameID = facade.listGames().getFirst().gameID();
+
+            facade.joinGame(ChessGame.TeamColor.WHITE, gameID);
+
+            Assertions.assertDoesNotThrow(
+                    () -> facade.joinGame(ChessGame.TeamColor.BLACK, gameID)
+            );
+        }
+
+        @Test
+        @DisplayName("Join a game with incorrect game ID")
+        public void joinGameNonexistentGame() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+
+            Assertions.assertThrows(
+                    IllegalArgumentException.class,
+                    () -> facade.joinGame(ChessGame.TeamColor.WHITE, -1)
+            );
         }
     }
 }
