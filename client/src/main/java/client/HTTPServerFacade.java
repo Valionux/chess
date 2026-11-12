@@ -138,6 +138,9 @@ public class HTTPServerFacade implements ServerFacade {
                     HttpResponse.BodyHandlers.ofString()
             );
 
+            if (response.statusCode() != 200) {
+                throw new ServerException("Could not communicate with server");
+            }
 
         } catch (IOException | InterruptedException e) {
             throw new ServerException("Could not communicate with server");

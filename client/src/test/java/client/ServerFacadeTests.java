@@ -137,4 +137,19 @@ public class ServerFacadeTests {
             facade.register("testUser", "password123", "test@email.com");
         }
     }
+
+    @Nested
+    class ClearTests {
+        @Test
+        @DisplayName("Successful clearing of the database")
+        public void clearActuallyClearsDatabase() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+
+            facade.clear();
+
+            Assertions.assertThrows(UnauthorizedException.class, () ->
+                    facade.login("testUser", "password123")
+            );
+        }
+    }
 }
