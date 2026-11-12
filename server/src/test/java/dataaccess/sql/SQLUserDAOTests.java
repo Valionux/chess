@@ -1,6 +1,6 @@
 package dataaccess.sql;
 
-import dataaccess.DataAccessException;
+import exceptions.DataAccessException;
 import model.User;
 import org.junit.jupiter.api.*;
 

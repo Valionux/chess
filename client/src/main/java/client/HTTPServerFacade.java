@@ -9,16 +9,16 @@ import client.model.response.CreateResponse;
 import client.model.response.ListGameResponse;
 import client.model.response.LoginResponse;
 import com.google.gson.Gson;
+import exceptions.ServerException;
 import model.Game;
-import service.AlreadyTakenException;
-import service.UnauthorizedException;
+import exceptions.AlreadyTakenException;
+import exceptions.UnauthorizedException;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 
 public class HTTPServerFacade implements ServerFacade {
@@ -27,7 +27,6 @@ public class HTTPServerFacade implements ServerFacade {
     private final String serverUrl;
     private final Gson gson = new Gson();
     private String authToken;
-    private final List<Integer> gameIDs = new ArrayList<>();
 
     public HTTPServerFacade(String serverUrl) {
         this.httpClient = HttpClient.newHttpClient();
@@ -35,7 +34,7 @@ public class HTTPServerFacade implements ServerFacade {
     }
 
     @Override
-    public void register(String username, String password, String email) throws AlreadyTakenException {
+    public String register(String username, String password, String email) throws AlreadyTakenException {
         try {
             String body = gson.toJson(new RegisterRequest(username, password, email));
             HttpRequest request = HttpRequest.newBuilder()
@@ -55,6 +54,7 @@ public class HTTPServerFacade implements ServerFacade {
                 );
 
                 this.authToken = result.authToken();
+                return username;
             } else if (response.statusCode() == 400) {
                 throw new IllegalArgumentException("Wrong arguments");
             } else if (response.statusCode() == 403) {
@@ -68,7 +68,7 @@ public class HTTPServerFacade implements ServerFacade {
     }
 
     @Override
-    public void login(String username, String password) throws UnauthorizedException {
+    public String login(String username, String password) throws UnauthorizedException {
         try {
             String body = gson.toJson(new LoginRequest(username, password));
             HttpRequest request = HttpRequest.newBuilder()
@@ -88,6 +88,7 @@ public class HTTPServerFacade implements ServerFacade {
                 );
 
                 this.authToken = result.authToken();
+                return username;
             } else if (response.statusCode() == 401) {
                 throw new UnauthorizedException("Username or password is incorrect");
             } else if (response.statusCode() == 400) {
@@ -151,7 +152,7 @@ public class HTTPServerFacade implements ServerFacade {
     }
 
     @Override
-    public void createGame(String gameName) throws UnauthorizedException {
+    public int createGame(String gameName) throws UnauthorizedException {
         try {
             String body = gson.toJson(new CreateRequest(gameName));
             HttpRequest request = HttpRequest.newBuilder()
@@ -171,7 +172,7 @@ public class HTTPServerFacade implements ServerFacade {
                         CreateResponse.class
                 );
 
-                this.gameIDs.add(result.gameID());
+                return result.gameID();
             } else if (response.statusCode() == 401) {
                 throw new UnauthorizedException("Username or password is incorrect");
             } else if (response.statusCode() == 400) {

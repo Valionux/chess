@@ -1,7 +1,7 @@
 package dataaccess.sql;
 
 import chess.ChessGame;
-import dataaccess.DataAccessException;
+import exceptions.DataAccessException;
 import model.Game;
 import org.junit.jupiter.api.*;
 

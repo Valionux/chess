@@ -2,6 +2,9 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
+import exceptions.AlreadyTakenException;
+import exceptions.DataAccessException;
+import exceptions.UnauthorizedException;
 import model.Auth;
 import model.Game;
 import org.junit.jupiter.api.*;

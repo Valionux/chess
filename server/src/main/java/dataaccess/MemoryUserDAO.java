@@ -1,5 +1,6 @@
 package dataaccess;
 
+import exceptions.DataAccessException;
 import model.User;
 
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.Map;
 
 public class MemoryUserDAO implements UserDAO {
 
-    private Map<String, User> userData = new HashMap<>();
+    private final Map<String, User> userData = new HashMap<>();
 
     @Override
     public void clear() throws DataAccessException {

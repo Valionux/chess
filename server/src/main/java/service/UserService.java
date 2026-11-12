@@ -1,8 +1,10 @@
 package service;
 
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
+import exceptions.DataAccessException;
 import dataaccess.UserDAO;
+import exceptions.AlreadyTakenException;
+import exceptions.UnauthorizedException;
 import model.Auth;
 import model.User;
 import org.mindrot.jbcrypt.BCrypt;

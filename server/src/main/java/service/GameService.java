@@ -2,8 +2,10 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
+import exceptions.DataAccessException;
 import dataaccess.GameDAO;
+import exceptions.AlreadyTakenException;
+import exceptions.UnauthorizedException;
 import model.Auth;
 import model.Game;
 import request.CreateGameRequest;

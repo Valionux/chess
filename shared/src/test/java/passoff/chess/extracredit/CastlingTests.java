@@ -1,6 +1,7 @@
 package passoff.chess.extracredit;
 
 import chess.*;
+import exceptions.InvalidMoveException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -322,6 +323,7 @@ public class CastlingTests {
     private void assertWhiteCanCastle(ChessGame game, boolean allowQueensideCastle, boolean allowKingsideCastle) {
         assertCanCastle(game, allowQueensideCastle, allowKingsideCastle, WHITE_KING_POSITION, WHITE_QUEENSIDE_CASTLE, WHITE_KINGSIDE_CASTLE);
     }
+
     /**
      * Asserts that BLACK can or cannot make the queenside & kingside castle moves.
      * <br>
@@ -334,6 +336,7 @@ public class CastlingTests {
     private void assertBlackCanCastle(ChessGame game, boolean allowKingsideCastle, boolean allowQueensideCastle) {
         assertCanCastle(game, allowQueensideCastle, allowKingsideCastle, BLACK_KING_POSITION, BLACK_QUEENSIDE_CASTLE, BLACK_KINGSIDE_CASTLE);
     }
+
     private void assertCanCastle(ChessGame game, boolean allowQueensideCastle, boolean allowKingsideCastle,
                                  ChessPosition kingPosition, ChessMove queensideCastleMove, ChessMove kingsideCastleMove) {
         Assertions.assertEquals(allowQueensideCastle,
