@@ -67,7 +67,7 @@ public class HTTPServerFacade implements ServerFacade {
         try {
             String body = gson.toJson(new LoginRequest(username, password));
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(serverUrl + "/user/session"))
+                    .uri(URI.create(serverUrl + "/session"))
                     .POST(HttpRequest.BodyPublishers.ofString(body))
                     .build();
 
@@ -75,6 +75,9 @@ public class HTTPServerFacade implements ServerFacade {
                     request,
                     HttpResponse.BodyHandlers.ofString()
             );
+
+            System.out.println("Status: " + response.statusCode());
+            System.out.println("Body: " + response.body());
 
             if (response.statusCode() == 200) {
                 LoginResponse result = gson.fromJson(
@@ -100,7 +103,7 @@ public class HTTPServerFacade implements ServerFacade {
     public void logout() throws UnauthorizedException {
         try {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(serverUrl + "/user/session"))
+                    .uri(URI.create(serverUrl + "/session"))
                     .header("Authorization", authToken)
                     .DELETE()
                     .build();

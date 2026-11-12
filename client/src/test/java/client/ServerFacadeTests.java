@@ -3,6 +3,7 @@ package client;
 import org.junit.jupiter.api.*;
 import server.Server;
 import service.AlreadyTakenException;
+import service.UnauthorizedException;
 
 public class ServerFacadeTests {
 
@@ -61,6 +62,79 @@ public class ServerFacadeTests {
                             "other@email.com"
                     )
             );
+        }
+    }
+
+    @Nested
+    class LoginTests {
+
+        @Test
+        @DisplayName("Successful login")
+        public void loginSuccess() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+
+            facade.logout();
+
+            Assertions.assertDoesNotThrow(() ->
+                    facade.login("testUser", "password123")
+            );
+        }
+
+        @Test
+        @DisplayName("Login with wrong username")
+        public void loginWrongUsername() {
+            Assertions.assertThrows(UnauthorizedException.class, () ->
+                    facade.login("nonexistentUser", "password123")
+            );
+        }
+
+        @Test
+        @DisplayName("Login with wrong password")
+        public void loginWrongPassword() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+            facade.logout();
+
+            Assertions.assertThrows(UnauthorizedException.class, () ->
+                    facade.login("testUser", "wrongPassword")
+            );
+        }
+    }
+
+    @Nested
+    class LogoutTests {
+
+        @Test
+        @DisplayName("Successful logout")
+        public void logoutSuccess() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+
+            Assertions.assertDoesNotThrow(() -> facade.logout());
+        }
+
+        @Test
+        @DisplayName("Logging out without being logged it")
+        public void logoutUnauthorized() {
+            Assertions.assertThrows(UnauthorizedException.class, () ->
+                    facade.logout()
+            );
+        }
+
+        @Test
+        @DisplayName("Logging out twice")
+        public void logoutTwice() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+
+            facade.logout();
+
+            Assertions.assertThrows(UnauthorizedException.class, () ->
+                    facade.logout()
+            );
+        }
+
+        @Test
+        @DisplayName("Logging out with the wrong token")
+        public void logoutInvalidToken() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
         }
     }
 }
