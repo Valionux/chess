@@ -152,4 +152,24 @@ public class ServerFacadeTests {
             );
         }
     }
+
+    @Nested
+    class CreateGameTests {
+        @Test
+        @DisplayName("Successful creation of a game")
+        public void createGameSuccess() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+
+            Assertions.assertDoesNotThrow(() -> facade.createGame("My Game"));
+        }
+
+        @Test
+        @DisplayName("Creating game without being logged in")
+        public void createGameUnauthorized() {
+            Assertions.assertThrows(
+                    UnauthorizedException.class,
+                    () -> facade.createGame("My Game")
+            );
+        }
+    }
 }

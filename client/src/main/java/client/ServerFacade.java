@@ -16,7 +16,7 @@ public interface ServerFacade {
 
     void clear();
 
-    void creatGame(String gameName);
+    void createGame(String gameName) throws UnauthorizedException;
 
     List<Game> listGames();
 
