@@ -1,9 +1,12 @@
 package client;
 
+import model.Game;
 import org.junit.jupiter.api.*;
 import server.Server;
 import service.AlreadyTakenException;
 import service.UnauthorizedException;
+
+import java.util.List;
 
 public class ServerFacadeTests {
 
@@ -170,6 +173,63 @@ public class ServerFacadeTests {
                     UnauthorizedException.class,
                     () -> facade.createGame("My Game")
             );
+        }
+    }
+
+    @Nested
+    class ListGameTests {
+        @Test
+        @DisplayName("Successful listing of games")
+        public void listGamesSuccess() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+
+            facade.createGame("Game 1");
+            facade.createGame("Game 2");
+
+            List<Game> games = facade.listGames();
+
+            Assertions.assertEquals(2, games.size());
+            Assertions.assertEquals("Game 1", games.get(0).gameName());
+            Assertions.assertEquals("Game 2", games.get(1).gameName());
+        }
+
+        @Test
+        @DisplayName("There are no games")
+        public void listGamesEmpty() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+
+            List<Game> games = facade.listGames();
+
+            Assertions.assertNotNull(games);
+            Assertions.assertTrue(games.isEmpty());
+        }
+
+        @Test
+        @DisplayName("Requesting list without being logged in")
+        public void listGamesUnauthorized() {
+            Assertions.assertThrows(
+                    UnauthorizedException.class,
+                    () -> facade.listGames()
+            );
+        }
+
+        @Test
+        @DisplayName("List games returns the right data")
+        public void listGamesContainsCorrectGameData() throws Exception {
+            facade.register("testUser", "password123", "test@email.com");
+
+            facade.createGame("My Game");
+
+            List<Game> games = facade.listGames();
+
+            Assertions.assertEquals(1, games.size());
+
+            Game game = games.getFirst();
+
+            Assertions.assertEquals("My Game", game.gameName());
+            Assertions.assertNull(game.whiteUsername());
+            Assertions.assertNull(game.blackUsername());
+            Assertions.assertTrue(game.gameID() > 0);
         }
     }
 }

@@ -18,7 +18,7 @@ public interface ServerFacade {
 
     void createGame(String gameName) throws UnauthorizedException;
 
-    List<Game> listGames();
+    List<Game> listGames() throws UnauthorizedException;
 
     void joinGame(int gameID, String color);
 }

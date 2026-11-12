@@ -44,7 +44,6 @@ public class GameServiceTests {
             Assertions.assertSame(
                     gameName,
                     first.gameName());
-            Assertions.assertNull(first.game());
         }
     }
 

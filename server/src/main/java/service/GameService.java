@@ -9,7 +9,6 @@ import model.Game;
 import request.CreateGameRequest;
 import request.JoinGameRequest;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameService {
@@ -27,19 +26,7 @@ public class GameService {
             throw new UnauthorizedException("Wrong authentification token");
         }
 
-        List<Game> games = gameDAO.listGames();
-        List<Game> gamesNoChess = new ArrayList<>();
-
-        for (Game game : games) {
-            gamesNoChess.add(
-                    new Game(game.gameID(),
-                            game.whiteUsername(),
-                            game.blackUsername(),
-                            game.gameName(),
-                            null));
-        }
-
-        return gamesNoChess;
+        return gameDAO.listGames();
     }
 
     public int createGame(String authToken, CreateGameRequest req)
