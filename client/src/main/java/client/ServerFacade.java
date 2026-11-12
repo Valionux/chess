@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ServerFacade {
 
-    void register(String username, String password, String email) throws UnauthorizedException, AlreadyTakenException;
+    void register(String username, String password, String email) throws AlreadyTakenException;
 
     void login(String username, String password) throws UnauthorizedException;
 
