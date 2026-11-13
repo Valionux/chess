@@ -9,17 +9,17 @@ import java.util.List;
 
 public interface ServerFacades {
 
-    String register(String username, String password, String email) throws AlreadyTakenException;
+    String register(String username, String password, String email) throws AlreadyTakenException, UnauthorizedException;
 
-    String login(String username, String password) throws UnauthorizedException;
+    String login(String username, String password) throws UnauthorizedException, AlreadyTakenException;
 
-    void logout() throws UnauthorizedException;
+    void logout() throws UnauthorizedException, AlreadyTakenException;
 
-    void clear();
+    void clear() throws UnauthorizedException, AlreadyTakenException;
 
-    int createGame(String gameName) throws UnauthorizedException;
+    int createGame(String gameName) throws UnauthorizedException, AlreadyTakenException;
 
-    List<Game> listGames() throws UnauthorizedException;
+    List<Game> listGames() throws UnauthorizedException, AlreadyTakenException;
 
     void joinGame(ChessGame.TeamColor color, int gameID) throws UnauthorizedException, AlreadyTakenException;
 }

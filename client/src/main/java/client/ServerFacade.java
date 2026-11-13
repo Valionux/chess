@@ -34,7 +34,7 @@ public class ServerFacade implements ServerFacades {
     }
 
     @Override
-    public String register(String username, String password, String email) throws AlreadyTakenException {
+    public String register(String username, String password, String email) throws AlreadyTakenException, UnauthorizedException {
         try {
             String body = gson.toJson(new RegisterRequest(username, password, email));
             HttpRequest request = HttpRequest.newBuilder()
@@ -55,20 +55,17 @@ public class ServerFacade implements ServerFacades {
 
                 this.authToken = result.authToken();
                 return username;
-            } else if (response.statusCode() == 400) {
-                throw new IllegalArgumentException("Wrong arguments");
-            } else if (response.statusCode() == 403) {
-                throw new AlreadyTakenException("Username already taken");
             } else {
-                throw new ServerException("Could not communicate with server");
+                errorHandler(response.statusCode());
             }
         } catch (IOException | InterruptedException e) {
             throw new ServerException("Could not communicate with server");
         }
+        return null;
     }
 
     @Override
-    public String login(String username, String password) throws UnauthorizedException {
+    public String login(String username, String password) throws UnauthorizedException, AlreadyTakenException {
         try {
             String body = gson.toJson(new LoginRequest(username, password));
             HttpRequest request = HttpRequest.newBuilder()
@@ -89,20 +86,17 @@ public class ServerFacade implements ServerFacades {
 
                 this.authToken = result.authToken();
                 return username;
-            } else if (response.statusCode() == 401) {
-                throw new UnauthorizedException("Username or password is incorrect");
-            } else if (response.statusCode() == 400) {
-                throw new IllegalArgumentException("Wrong arguments");
             } else {
-                throw new ServerException("Could not communicate with server");
+                errorHandler(response.statusCode());
             }
         } catch (IOException | InterruptedException e) {
             throw new ServerException("Could not communicate with server");
         }
+        return null;
     }
 
     @Override
-    public void logout() throws UnauthorizedException {
+    public void logout() throws UnauthorizedException, AlreadyTakenException {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(serverUrl + "/session"))
@@ -116,13 +110,7 @@ public class ServerFacade implements ServerFacades {
             );
 
             if (response.statusCode() != 200) {
-                if (response.statusCode() == 401) {
-                    throw new UnauthorizedException("Username or password is incorrect");
-                } else if (response.statusCode() == 400) {
-                    throw new IllegalArgumentException("Wrong arguments");
-                } else {
-                    throw new ServerException("Could not communicate with server");
-                }
+                errorHandler(response.statusCode());
             }
         } catch (IOException | InterruptedException e) {
             throw new ServerException("Could not communicate with the server");
@@ -130,7 +118,7 @@ public class ServerFacade implements ServerFacades {
     }
 
     @Override
-    public void clear() {
+    public void clear() throws UnauthorizedException, AlreadyTakenException {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(serverUrl + "/db"))
@@ -143,7 +131,7 @@ public class ServerFacade implements ServerFacades {
             );
 
             if (response.statusCode() != 200) {
-                throw new ServerException("Could not communicate with server");
+                errorHandler(response.statusCode());
             }
 
         } catch (IOException | InterruptedException e) {
@@ -152,7 +140,7 @@ public class ServerFacade implements ServerFacades {
     }
 
     @Override
-    public int createGame(String gameName) throws UnauthorizedException {
+    public int createGame(String gameName) throws UnauthorizedException, AlreadyTakenException {
         try {
             String body = gson.toJson(new CreateRequest(gameName));
             HttpRequest request = HttpRequest.newBuilder()
@@ -173,20 +161,17 @@ public class ServerFacade implements ServerFacades {
                 );
 
                 return result.gameID();
-            } else if (response.statusCode() == 401) {
-                throw new UnauthorizedException("Username or password is incorrect");
-            } else if (response.statusCode() == 400) {
-                throw new IllegalArgumentException("Wrong arguments");
             } else {
-                throw new ServerException("Could not communicate with server");
+                errorHandler(response.statusCode());
             }
         } catch (IOException | InterruptedException e) {
             throw new ServerException("Could not communicate with server");
         }
+        return 0;
     }
 
     @Override
-    public List<Game> listGames() throws UnauthorizedException {
+    public List<Game> listGames() throws UnauthorizedException, AlreadyTakenException {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(serverUrl + "/game"))
@@ -206,17 +191,14 @@ public class ServerFacade implements ServerFacades {
                 );
 
                 return result.games();
-            } else if (response.statusCode() == 401) {
-                throw new UnauthorizedException("Username or password is incorrect");
-            } else if (response.statusCode() == 400) {
-                throw new IllegalArgumentException("Wrong arguments");
             } else {
-                throw new ServerException("Could not communicate with server");
+                errorHandler(response.statusCode());
             }
 
         } catch (IOException | InterruptedException e) {
             throw new ServerException("Could not communicate with server");
         }
+        return null;
     }
 
     @Override
@@ -235,17 +217,21 @@ public class ServerFacade implements ServerFacades {
             );
 
             if (response.statusCode() != 200) {
-                if (response.statusCode() == 400) {
-                    throw new IllegalArgumentException("Wrong arguments");
-                } else if (response.statusCode() == 401) {
-                    throw new UnauthorizedException("Username or password is incorrect");
-                } else if (response.statusCode() == 403) {
-                    throw new AlreadyTakenException("Username already taken");
-                } else {
-                    throw new ServerException("Could not communicate with server");
-                }
+                errorHandler(response.statusCode());
             }
         } catch (IOException | InterruptedException e) {
+            throw new ServerException("Could not communicate with server");
+        }
+    }
+
+    private void errorHandler(int statusCode) throws UnauthorizedException, AlreadyTakenException {
+        if (statusCode == 400) {
+            throw new IllegalArgumentException("Wrong arguments");
+        } else if (statusCode == 401) {
+            throw new UnauthorizedException("Wrong credentials");
+        } else if (statusCode == 403) {
+            throw new AlreadyTakenException("");
+        } else {
             throw new ServerException("Could not communicate with server");
         }
     }

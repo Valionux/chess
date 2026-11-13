@@ -27,7 +27,7 @@ public class ServerFacadeTests {
     }
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws UnauthorizedException, AlreadyTakenException {
         facade.clear();
     }
 
@@ -40,7 +40,7 @@ public class ServerFacadeTests {
     class RegisterTests {
         @Test
         @DisplayName("Successful register")
-        public void registerSuccess() throws AlreadyTakenException {
+        public void registerSuccess() throws AlreadyTakenException, UnauthorizedException {
             Assertions.assertEquals("testUser",
                     facade.register(
                             "testUser",
