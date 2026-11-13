@@ -12,14 +12,14 @@ import java.util.List;
 public class ServerFacadeTests {
 
     private static Server server;
-    private static ServerFacade facade;
+    private static ServerFacades facade;
 
     @BeforeAll
     public static void init() {
         server = new Server();
         var port = server.run(0);
 
-        facade = new HTTPServerFacade(
+        facade = new ServerFacade(
                 "http://localhost:" + port
         );
 
