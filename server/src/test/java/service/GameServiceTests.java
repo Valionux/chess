@@ -80,6 +80,16 @@ public class GameServiceTests {
             Assertions.assertDoesNotThrow(
                     () -> myService.createGame(authToken, gameReq));
         }
+
+        @Test
+        @DisplayName("Adding a game with an empty name")
+        void addEmptyGame() throws DataAccessException {
+            authDAO.add(new Auth(authToken, username));
+            Assertions.assertThrows(
+                    IllegalArgumentException.class,
+                    () -> myService.createGame(authToken, new CreateGameRequest("  "))
+            );
+        }
     }
 
     @Nested

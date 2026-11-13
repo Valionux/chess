@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessGame;
+import exceptions.ServerException;
 import model.Game;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -27,7 +28,7 @@ public class ServerFacadeTests {
     }
 
     @BeforeEach
-    public void setUp() throws UnauthorizedException, AlreadyTakenException {
+    public void setUp() {
         facade.clear();
     }
 
@@ -40,7 +41,7 @@ public class ServerFacadeTests {
     class RegisterTests {
         @Test
         @DisplayName("Successful register")
-        public void registerSuccess() throws AlreadyTakenException, UnauthorizedException {
+        public void registerSuccess() throws AlreadyTakenException {
             Assertions.assertEquals("testUser",
                     facade.register(
                             "testUser",
@@ -65,6 +66,15 @@ public class ServerFacadeTests {
                             "password456",
                             "other@email.com"
                     )
+            );
+        }
+
+        @Test
+        @DisplayName("Adding a user with an empty name")
+        void addEmptyGame() {
+            Assertions.assertThrows(
+                    IllegalArgumentException.class,
+                    () -> facade.register("  ", " ", "   ")
             );
         }
     }
@@ -101,6 +111,15 @@ public class ServerFacadeTests {
 
             Assertions.assertThrows(UnauthorizedException.class, () ->
                     facade.login("testUser", "wrongPassword")
+            );
+        }
+
+        @Test
+        @DisplayName("Logging in with an empty name")
+        void addEmptyGame() {
+            Assertions.assertThrows(
+                    IllegalArgumentException.class,
+                    () -> facade.login(" ", "   ")
             );
         }
     }
@@ -176,6 +195,17 @@ public class ServerFacadeTests {
             Assertions.assertThrows(
                     UnauthorizedException.class,
                     () -> facade.createGame("My Game")
+            );
+        }
+
+        @Test
+        @DisplayName("Adding a game with an empty name")
+        void addEmptyGame() throws AlreadyTakenException {
+            facade.register("test", "test", "test");
+
+            Assertions.assertThrows(
+                    IllegalArgumentException.class,
+                    () -> facade.createGame("   ")
             );
         }
     }
@@ -299,6 +329,55 @@ public class ServerFacadeTests {
             Assertions.assertThrows(
                     IllegalArgumentException.class,
                     () -> facade.joinGame(ChessGame.TeamColor.WHITE, -1)
+            );
+        }
+    }
+
+    @Nested
+    class ServerExceptionTests {
+        @Test
+        public void serverUnavailable() {
+            ServerFacade facade =
+                    new ServerFacade("http://localhost:1");
+
+            Assertions.assertThrows(
+                    ServerException.class,
+                    facade::listGames
+            );
+
+            Assertions.assertThrows(
+                    ServerException.class,
+                    facade::clear
+            );
+
+            Assertions.assertThrows(
+                    ServerException.class,
+                    facade::logout
+            );
+
+            Assertions.assertThrows(
+                    ServerException.class,
+                    () -> facade.register("", "", "")
+            );
+
+            Assertions.assertThrows(
+                    ServerException.class,
+                    () -> facade.login("", "")
+            );
+
+            Assertions.assertThrows(
+                    ServerException.class,
+                    () -> facade.createGame("")
+            );
+
+            Assertions.assertThrows(
+                    ServerException.class,
+                    () -> facade.register("", "", "")
+            );
+
+            Assertions.assertThrows(
+                    ServerException.class,
+                    () -> facade.joinGame(ChessGame.TeamColor.WHITE, 0)
             );
         }
     }

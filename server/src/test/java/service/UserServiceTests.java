@@ -62,6 +62,15 @@ public class UserServiceTests {
             Assertions.assertInstanceOf(String.class, res.authToken());
             Assertions.assertEquals(username, res.username());
         }
+
+        @Test
+        @DisplayName("Adding a user with an empty name")
+        void addEmptyGame() {
+            Assertions.assertThrows(
+                    IllegalArgumentException.class,
+                    () -> myService.register(new RegisterRequest("  ", " ", "   "))
+            );
+        }
     }
 
     @Nested
@@ -101,6 +110,15 @@ public class UserServiceTests {
             Assertions.assertInstanceOf(LoginResult.class, res);
             Assertions.assertInstanceOf(String.class, res.authToken());
             Assertions.assertEquals(username, res.username());
+        }
+
+        @Test
+        @DisplayName("Logging in with an empty name")
+        void addEmptyGame() {
+            Assertions.assertThrows(
+                    IllegalArgumentException.class,
+                    () -> myService.login(new LoginRequest(" ", "   "))
+            );
         }
     }
 

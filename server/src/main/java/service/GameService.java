@@ -40,7 +40,7 @@ public class GameService {
             throw new UnauthorizedException("Wrong authentification token");
         }
 
-        if (gameName == null) {
+        if (gameName == null || gameName.isBlank()) {
             throw new IllegalArgumentException("A game name must be provided");
         }
 

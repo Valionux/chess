@@ -31,7 +31,10 @@ public class UserService {
         String username = req.username();
         if (email == null
                 || password == null
-                || username == null) {
+                || username == null
+                || email.isBlank()
+                || password.isBlank()
+                || username.isBlank()) {
             throw new IllegalArgumentException("A username, a password and an email address must be provided");
         }
 
@@ -52,7 +55,9 @@ public class UserService {
         String password = req.password();
         String username = req.username();
         if (password == null
-                || username == null) {
+                || username == null
+                || password.isBlank()
+                || username.isBlank()) {
             throw new IllegalArgumentException("A username, a password and an email address must be provided");
         }
 
