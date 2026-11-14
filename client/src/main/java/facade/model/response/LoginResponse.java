@@ -1,4 +1,4 @@
-package client.model.response;
+package facade.model.response;
 
 public record LoginResponse(
         String username,

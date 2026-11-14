@@ -1,13 +1,13 @@
-package client;
+package facade;
 
 import chess.ChessGame;
-import client.model.request.CreateRequest;
-import client.model.request.JoinRequest;
-import client.model.request.LoginRequest;
-import client.model.request.RegisterRequest;
-import client.model.response.CreateResponse;
-import client.model.response.ListGameResponse;
-import client.model.response.LoginResponse;
+import facade.model.request.CreateRequest;
+import facade.model.request.JoinRequest;
+import facade.model.request.LoginRequest;
+import facade.model.request.RegisterRequest;
+import facade.model.response.CreateResponse;
+import facade.model.response.ListGameResponse;
+import facade.model.response.LoginResponse;
 import com.google.gson.Gson;
 import exceptions.ServerException;
 import model.Game;

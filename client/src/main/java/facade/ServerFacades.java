@@ -1,4 +1,4 @@
-package client;
+package facade;
 
 import chess.ChessGame;
 import model.Game;

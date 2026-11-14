@@ -1,4 +1,4 @@
-package client.model.request;
+package facade.model.request;
 
 public record RegisterRequest(
         String username,

@@ -1,4 +1,4 @@
-package client.model.response;
+package facade.model.response;
 
 import model.Game;
 

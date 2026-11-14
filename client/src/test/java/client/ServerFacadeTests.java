@@ -2,6 +2,8 @@ package client;
 
 import chess.ChessGame;
 import exceptions.ServerException;
+import facade.ServerFacade;
+import facade.ServerFacades;
 import model.Game;
 import org.junit.jupiter.api.*;
 import server.Server;
