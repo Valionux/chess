@@ -3,7 +3,7 @@ package ui;
 import static ui.EscapeSequences.*;
 
 public class Menus {
-    static final String startMenu = String.format("%-40s %s%n", "Command", "Action") +
+    static final String START_MENU = String.format("%-40s %s%n", "Command", "Action") +
             "-----------------------------------------------------------------------------------------\n";
 
     public static void printMenu(ConsoleUI.STATE state) {
@@ -22,7 +22,7 @@ public class Menus {
 
     public static String loggedOutMenu() {
 
-        return startMenu +
+        return START_MENU +
                 formatCommand(
                         "register <USERNAME> <PASSWORD> <EMAIL>",
                         "Create a new user") +
@@ -40,7 +40,7 @@ public class Menus {
 
     public static String loggedInMenu() {
 
-        return startMenu +
+        return START_MENU +
                 formatCommand(
                         "logout",
                         "Log out of your current session") +

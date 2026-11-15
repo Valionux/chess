@@ -53,138 +53,154 @@ public class ConsoleUI {
 
             switch (args[0]) {
                 case "help" -> Menus.printMenu(state);
-                case "register" -> {
-                    if (args.length != 4) {
-                        System.out.println("Please provide a username, a password and an email");
-                        break;
-                    }
-                    try {
-                        var username = facade.register(args[1], args[2], args[3]);
-                        state = STATE.LOGGED_IN;
-                        System.out.printf("Logged in as %s%n", username);
-                    } catch (AlreadyTakenException e) {
-                        System.out.println("This username is already taken, please choose another one");
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Please provide a username, a password and an email");
-                    }
-                }
-                case "login" -> {
-                    if (args.length != 3) {
-                        System.out.println("Please provide a username and a password");
-                        break;
-                    }
-                    try {
-                        var username = facade.login(args[1], args[2]);
-                        state = STATE.LOGGED_IN;
-                        System.out.printf("Logged in as %s%n", username);
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Please provide a username and a password");
-                    } catch (UnauthorizedException e) {
-                        System.out.println("Username or password incorrect");
-                    }
-                }
-                case "clear" -> {
-                    facade.clear();
-                    System.out.println("The database was successfully deleted");
-                    state = STATE.LOGGED_OUT;
-                }
-                case "logout" -> {
-                    try {
-                        facade.logout();
-                        System.out.println("Successfully logged out");
-                        state = STATE.LOGGED_OUT;
-                    } catch (UnauthorizedException e) {
-                        System.out.println("You must be logged in to accomplish this action");
-                    }
-                }
-                case "create" -> {
-                    if (args.length != 2) {
-                        System.out.println("Please provide a name for the game");
-                        break;
-                    }
-                    try {
-                        facade.createGame(args[1]);
-                        System.out.println("Game successfully created");
-                    } catch (UnauthorizedException e) {
-                        System.out.println("You must be logged in to accomplish this action");
-                    }
-                }
-                case "list" -> {
-                    try {
-                        var games = facade.listGames();
-                        this.gameIDs = games.stream()
-                                .map(Game::gameID)
-                                .toList();
-                        if (!games.isEmpty()) {
-                            printGames(games);
-                        } else {
-                            System.out.println("There are no games in the database");
-                        }
-                    } catch (UnauthorizedException e) {
-                        System.out.println("You must be logged in to accomplish this action");
-                    }
-                }
-                case "play" -> {
-                    try {
-                        if (args.length != 3) {
-                            throw new IllegalArgumentException();
-                        }
-                        ChessGame.TeamColor color;
-                        if (args[2].equalsIgnoreCase("white")) {
-                            color = ChessGame.TeamColor.WHITE;
-                        } else if (args[2].equalsIgnoreCase("black")) {
-                            color = ChessGame.TeamColor.BLACK;
-                        } else {
-                            throw new IllegalArgumentException();
-                        }
-                        var games = facade.listGames();
-                        this.gameIDs = games.stream()
-                                .map(Game::gameID)
-                                .toList();
-                        int gameNumber = Integer.parseInt(args[1]) - 1;
-
-                        if (gameNumber < 0 || gameNumber >= games.size()) {
-                            throw new IllegalArgumentException();
-                        }
-
-                        var game = games.get(gameNumber);
-                        facade.joinGame(color, game.gameID());
-
-                        printBoard(game.game(), color);
-                    } catch (UnauthorizedException e) {
-                        System.out.println("You must be logged in to accomplish this action");
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Please provide the game number and your color");
-                    } catch (AlreadyTakenException e) {
-                        System.out.println("This team is already taken. Please join the other team or another game");
-                    }
-                }
-                case "observe" -> {
-                    try {
-                        if (args.length != 2) {
-                            throw new IllegalArgumentException();
-                        }
-                        var games = facade.listGames();
-                        this.gameIDs = games.stream()
-                                .map(Game::gameID)
-                                .toList();
-                        int gameNumber = Integer.parseInt(args[1]) - 1;
-
-                        if (gameNumber < 0 || gameNumber >= games.size()) {
-                            throw new IllegalArgumentException();
-                        }
-
-                        var game = games.get(gameNumber);
-
-                        printBoard(game.game(), ChessGame.TeamColor.WHITE);
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("Please provide the game number");
-                    } catch (UnauthorizedException e) {
-                        System.out.println("You must be logged in to accomplish this action");
-                    }
-                }
+                case "register" -> register(args);
+                case "login" -> login(args);
+                case "clear" -> clear();
+                case "logout" -> logout();
+                case "create" -> create(args);
+                case "list" -> list();
+                case "play" -> play(args);
+                case "observe" -> observe(args);
                 default -> System.out.println("Please provide a valid command");
             }
+        }
+    }
+
+    private void observe(String[] args) {
+        try {
+            if (args.length != 2) {
+                throw new IllegalArgumentException();
+            }
+            var games = facade.listGames();
+            this.gameIDs = games.stream()
+                    .map(Game::gameID)
+                    .toList();
+            int gameNumber = Integer.parseInt(args[1]) - 1;
+
+            if (gameNumber < 0 || gameNumber >= games.size()) {
+                throw new IllegalArgumentException();
+            }
+
+            var game = games.get(gameNumber);
+
+            printBoard(game.game(), ChessGame.TeamColor.WHITE);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Please provide the game number");
+        } catch (UnauthorizedException e) {
+            System.out.println("You must be logged in to accomplish this action");
+        }
+    }
+
+    private void play(String[] args) {
+        try {
+            if (args.length != 3) {
+                throw new IllegalArgumentException();
+            }
+            ChessGame.TeamColor color;
+            if (args[2].equalsIgnoreCase("white")) {
+                color = ChessGame.TeamColor.WHITE;
+            } else if (args[2].equalsIgnoreCase("black")) {
+                color = ChessGame.TeamColor.BLACK;
+            } else {
+                throw new IllegalArgumentException();
+            }
+            var games = facade.listGames();
+            this.gameIDs = games.stream()
+                    .map(Game::gameID)
+                    .toList();
+            int gameNumber = Integer.parseInt(args[1]) - 1;
+
+            if (gameNumber < 0 || gameNumber >= games.size()) {
+                throw new IllegalArgumentException();
+            }
+
+            var game = games.get(gameNumber);
+            facade.joinGame(color, game.gameID());
+
+            printBoard(game.game(), color);
+        } catch (UnauthorizedException e) {
+            System.out.println("You must be logged in to accomplish this action");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Please provide the game number and your color");
+        } catch (AlreadyTakenException e) {
+            System.out.println("This team is already taken. Please join the other team or another game");
+        }
+    }
+
+    private void list() {
+        try {
+            var games = facade.listGames();
+            this.gameIDs = games.stream()
+                    .map(Game::gameID)
+                    .toList();
+            if (!games.isEmpty()) {
+                printGames(games);
+            } else {
+                System.out.println("There are no games in the database");
+            }
+        } catch (UnauthorizedException e) {
+            System.out.println("You must be logged in to accomplish this action");
+        }
+    }
+
+    private void create(String[] args) {
+        if (args.length != 2) {
+            System.out.println("Please provide a name for the game");
+            return;
+        }
+        try {
+            facade.createGame(args[1]);
+            System.out.println("Game successfully created");
+        } catch (UnauthorizedException e) {
+            System.out.println("You must be logged in to accomplish this action");
+        }
+    }
+
+    private void logout() {
+        try {
+            facade.logout();
+            System.out.println("Successfully logged out");
+            state = STATE.LOGGED_OUT;
+        } catch (UnauthorizedException e) {
+            System.out.println("You must be logged in to accomplish this action");
+        }
+    }
+
+    private void clear() {
+        facade.clear();
+        System.out.println("The database was successfully deleted");
+        state = STATE.LOGGED_OUT;
+    }
+
+    private void login(String[] args) {
+        if (args.length != 3) {
+            System.out.println("Please provide a username and a password");
+            return;
+        }
+        try {
+            var username = facade.login(args[1], args[2]);
+            state = STATE.LOGGED_IN;
+            System.out.printf("Logged in as %s%n", username);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Please provide a username and a password");
+        } catch (UnauthorizedException e) {
+            System.out.println("Username or password incorrect");
+        }
+    }
+
+    private void register(String[] args) {
+        if (args.length != 4) {
+            System.out.println("Please provide a username, a password and an email");
+            return;
+        }
+        try {
+            var username = facade.register(args[1], args[2], args[3]);
+            state = STATE.LOGGED_IN;
+            System.out.printf("Logged in as %s%n", username);
+        } catch (AlreadyTakenException e) {
+            System.out.println("This username is already taken, please choose another one");
+        } catch (IllegalArgumentException e) {
+            System.out.println("Please provide a username, a password and an email");
         }
     }
 
