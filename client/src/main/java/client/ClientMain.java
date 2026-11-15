@@ -3,17 +3,13 @@ package client;
 import chess.*;
 import facade.ServerFacade;
 import facade.ServerFacades;
-import server.Server;
 import ui.ConsoleUI;
 
 public class ClientMain {
     static void main() {
-        Server server = new Server();
-        var port = server.run(8080);
+        String severUrl = "http://localhost:8080";
 
-        ServerFacades facade = new ServerFacade(
-                "http://localhost:" + port
-        );
+        ServerFacades facade = new ServerFacade(severUrl);
 
         ConsoleUI ui = new ConsoleUI(facade);
 
